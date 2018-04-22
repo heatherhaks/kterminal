@@ -11,6 +11,9 @@ The goal of this project was to make an efficient, small way to emulate a termin
 - Outputs a single texture for ease of use with however you display graphics.
 - Only updates the texture when the terminal is written to.
 
+## Screenshot of Example Project Running
+![screenshot](https://i.imgur.com/G78DhK0.png)
+
 ## Usage
 
 Using KTerminal should be easy.

@@ -14,7 +14,7 @@ The goal of this project was to make an efficient, small way to emulate a termin
 ## Example Project
 Here's an [example project](https://github.com/heatherhaks/KTerminalExample/) showing off the features of KTerminal.
 
-![screenshot](https://i.imgur.com/G78DhK0.png)
+![screenshot](https://i.imgur.com/CQiJlpN.gifv)
 
 ## Usage
 

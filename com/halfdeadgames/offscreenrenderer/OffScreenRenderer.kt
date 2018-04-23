@@ -26,6 +26,10 @@ class OffScreenRenderer(width: Int, height: Int, private val batch: Batch) : Dis
         return buffer.colorBufferTexture
     }
 
+    fun getBufferTexture() : Texture{
+        return buffer.colorBufferTexture
+    }
+
     fun FrameBuffer.use(action: (FrameBuffer) -> Unit) {
         begin()
         action(this)

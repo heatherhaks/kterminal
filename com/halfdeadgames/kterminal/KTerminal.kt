@@ -85,6 +85,7 @@ class KTerminal(width: Int,
         offScreenRenderer = OffScreenRenderer(width = width * scaledCharacterSize,
                 height = height * scaledCharacterSize, batch = inputBatch)
 
+        texture = offScreenRenderer.getBufferTexture()
         clear()
         update()
     }
@@ -155,7 +156,7 @@ class KTerminal(width: Int,
         }
 
         terminal[x][y] = characterData.copy()
-        update()
+        terminal[x][y].needsUpdate = true
     }
 
     fun write(x: Int, y: Int, character: Char = ' ', foregroundColor: Color = defaultForegroundColor, backgroundColor: Color = defaultBackgroundColor) {
@@ -190,23 +191,25 @@ class KTerminal(width: Int,
         clear(0, 0, width, height)
     }
 
-    private fun update() {
-        texture = offScreenRenderer.render {
+    fun update() {
+        offScreenRenderer.render {
             for(x in 0 until width) {
                 for(y in 0 until height) {
-                    it.color = terminal[x][y].backgroundColor
-                    it.draw( backgroundTexture,
-                            (x * scaledCharacterSize).toFloat(),
-                            ((height - y - 1) * scaledCharacterSize).toFloat(),
-                            scaledCharacterSize.toFloat(),
-                            scaledCharacterSize.toFloat())
+                    if(terminal[x][y].needsUpdate){
+                        it.color = terminal[x][y].backgroundColor
+                        it.draw( backgroundTexture,
+                                (x * scaledCharacterSize).toFloat(),
+                                ((height - y - 1) * scaledCharacterSize).toFloat(),
+                                scaledCharacterSize.toFloat(),
+                                scaledCharacterSize.toFloat())
 
-                    it.color = terminal[x][y].foregroundColor
-                    it.draw( glyphs[terminal[x][y].data.toInt()],
-                            (x * scaledCharacterSize).toFloat(),
-                            ((height - y - 1) * scaledCharacterSize.toFloat()),
-                            scaledCharacterSize.toFloat(),
-                            scaledCharacterSize.toFloat())
+                        it.color = terminal[x][y].foregroundColor
+                        it.draw( glyphs[terminal[x][y].data.toInt()],
+                                (x * scaledCharacterSize).toFloat(),
+                                ((height - y - 1) * scaledCharacterSize.toFloat()),
+                                scaledCharacterSize.toFloat(),
+                                scaledCharacterSize.toFloat())
+                    }
                 }
             }
         }

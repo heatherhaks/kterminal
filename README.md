@@ -63,6 +63,8 @@ kterminal.clear(2, // starting x
 ### Displaying the terminal texture
 
 ```
+kTerminal.update()
+
 batch.begin()
 batch.draw(kTerminal.texture, // the texture
            0,  // x position

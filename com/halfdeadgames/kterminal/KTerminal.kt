@@ -320,8 +320,14 @@ class KTerminal(width: Int,
             throw IllegalArgumentException("Y position should be between [0 and ${height-1}]")
         }
 
-        terminal[x][y] = characterData.copy()
-        terminal[x][y].needsUpdate = true
+        if(terminal[x][y].data != characterData.data ||
+                terminal[x][y].foregroundColor != characterData.foregroundColor ||
+                terminal[x][y].backgroundColor != characterData.backgroundColor) {
+            terminal[x][y] = characterData.copy()
+            terminal[x][y].needsUpdate = true
+          } else {
+            terminal[x][y].needsUpdate = false
+          }
     }
 
     fun write(x: Int, y: Int, character: Char = ' ', foregroundColor: Color = defaultForegroundColor, backgroundColor: Color = defaultBackgroundColor) {

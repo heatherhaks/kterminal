@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Disposable
@@ -19,14 +20,13 @@ class OffScreenRenderer(width: Int, height: Int, private val batch: Batch) : Dis
             // clearing the color here to due a bug where fading a modal in or out changes the color of the batch and can affect the background opacity
             // flip y axis to match normal libgdx orientation
             batch.use(batchColor, transformMatrix, projectionMatrix) {
-                clearScreen(clearColor)
                 block(batch)
             }
         }
         return buffer.colorBufferTexture
     }
 
-    fun getBufferTexture() : Texture{
+    fun getBufferTexture() : Texture {
         return buffer.colorBufferTexture
     }
 

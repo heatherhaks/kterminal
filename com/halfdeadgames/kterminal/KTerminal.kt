@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Disposable
-import com.halfdeadgames.kterminal.KTerminalDataCell
 import com.halfdeadgames.offscreenrenderer.OffScreenRenderer
 import java.nio.ByteBuffer
 
@@ -19,7 +18,7 @@ class KTerminal(width: Int,
                 var defaultBackgroundColor: Color = Color.BLACK,
                 inputBatch: SpriteBatch
 ) : Disposable{
-  
+
     companion object {
         const val NULL = 0.toChar()
         const val SMILE = 1.toChar()
@@ -185,6 +184,7 @@ class KTerminal(width: Int,
         const val NBSP = 255.toChar()
     }
 
+
     private var glyphTexture: Texture
     private var glyphs: Array<TextureRegion?>
     private var backgroundTexture: Texture
@@ -220,8 +220,8 @@ class KTerminal(width: Int,
                 throw IllegalArgumentException("Scale can't be 0 or below.")
             }
         }
-
-    lateinit var texture: Texture
+    private var needsUpdate = true
+    var texture: Texture
 
     init {
         this.scale = scale
@@ -319,15 +319,12 @@ class KTerminal(width: Int,
         if(y < 0 || y > height - 1) {
             throw IllegalArgumentException("Y position should be between [0 and ${height-1}]")
         }
-
         if(terminal[x][y].data != characterData.data ||
-                terminal[x][y].foregroundColor != characterData.foregroundColor ||
+                terminal[x][y].foregroundColor != characterData.foregroundColor || 
                 terminal[x][y].backgroundColor != characterData.backgroundColor) {
             terminal[x][y] = characterData.copy()
-            terminal[x][y].needsUpdate = true
-          } else {
-            terminal[x][y].needsUpdate = false
-          }
+            needsUpdate = true
+        }
     }
 
     fun write(x: Int, y: Int, character: Char = ' ', foregroundColor: Color = defaultForegroundColor, backgroundColor: Color = defaultBackgroundColor) {
@@ -363,26 +360,30 @@ class KTerminal(width: Int,
     }
 
     fun update() {
-        offScreenRenderer.render {
-            for(x in 0 until width) {
-                for(y in 0 until height) {
-                    if(terminal[x][y].needsUpdate){
-                        it.color = terminal[x][y].backgroundColor
-                        it.draw( backgroundTexture,
-                                (x * scaledCharacterSize).toFloat(),
-                                ((height - y - 1) * scaledCharacterSize).toFloat(),
-                                scaledCharacterSize.toFloat(),
-                                scaledCharacterSize.toFloat())
+        if(needsUpdate) {
+            offScreenRenderer.render {
+                for(x in 0 until width) {
+                    for(y in 0 until height) {
+                        if(terminal[x][y].needsUpdate){
+                            it.color = terminal[x][y].backgroundColor
+                            it.draw( backgroundTexture,
+                                    (x * scaledCharacterSize).toFloat(),
+                                    ((height - y - 1) * scaledCharacterSize).toFloat(),
+                                    scaledCharacterSize.toFloat(),
+                                    scaledCharacterSize.toFloat())
 
-                        it.color = terminal[x][y].foregroundColor
-                        it.draw( glyphs[terminal[x][y].data.toInt()],
-                                (x * scaledCharacterSize).toFloat(),
-                                ((height - y - 1) * scaledCharacterSize.toFloat()),
-                                scaledCharacterSize.toFloat(),
-                                scaledCharacterSize.toFloat())
+                            it.color = terminal[x][y].foregroundColor
+                            it.draw( glyphs[terminal[x][y].data.toInt()],
+                                    (x * scaledCharacterSize).toFloat(),
+                                    ((height - y - 1) * scaledCharacterSize.toFloat()),
+                                    scaledCharacterSize.toFloat(),
+                                    scaledCharacterSize.toFloat())
+                        }
                     }
                 }
             }
+
+            needsUpdate = false
         }
     }
 

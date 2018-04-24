@@ -6,7 +6,7 @@ The goal of this project was to make an efficient, small way to emulate a termin
 
 ## Features
 
-- Supports 256 Extended Ascii (IBM Code Page 437) font sheets, in a 16x16 square layout with no buffers around the glyphs. Dwarf Fortress font sheets are compatible if they're square.
+- Supports 256 Extended Ascii ([IBM Code Page 437](https://en.wikipedia.org/wiki/Code_page_437)) font sheets, in a 16x16 square layout with no buffers around the glyphs. Dwarf Fortress font sheets are compatible if they're square.
 - Full color support for each glyph, including foreground color, background color, and transparency.
 - Outputs a single texture for ease of use with however you display graphics.
 - Only updates the texture when the terminal is written to.

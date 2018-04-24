@@ -221,6 +221,7 @@ class KTerminal(width: Int,
             }
         }
     private var needsUpdate = true
+
     var texture: Texture
 
     init {
@@ -251,6 +252,7 @@ class KTerminal(width: Int,
                 height = height * scaledCharacterSize, batch = inputBatch)
 
         texture = offScreenRenderer.getBufferTexture()
+
         clear()
         update()
     }
@@ -320,9 +322,10 @@ class KTerminal(width: Int,
             throw IllegalArgumentException("Y position should be between [0 and ${height-1}]")
         }
         if(terminal[x][y].data != characterData.data ||
-                terminal[x][y].foregroundColor != characterData.foregroundColor || 
+                terminal[x][y].foregroundColor != characterData.foregroundColor ||
                 terminal[x][y].backgroundColor != characterData.backgroundColor) {
             terminal[x][y] = characterData.copy()
+            terminal[x][y].needsUpdate = true
             needsUpdate = true
         }
     }
@@ -358,13 +361,13 @@ class KTerminal(width: Int,
     fun clear() {
         clear(0, 0, width, height)
     }
-
+    
     fun update() {
         if(needsUpdate) {
             offScreenRenderer.render {
                 for(x in 0 until width) {
                     for(y in 0 until height) {
-                        if(terminal[x][y].needsUpdate){
+                        if(terminal[x][y].needsUpdate) {
                             it.color = terminal[x][y].backgroundColor
                             it.draw( backgroundTexture,
                                     (x * scaledCharacterSize).toFloat(),
@@ -378,6 +381,7 @@ class KTerminal(width: Int,
                                     ((height - y - 1) * scaledCharacterSize.toFloat()),
                                     scaledCharacterSize.toFloat(),
                                     scaledCharacterSize.toFloat())
+                            terminal[x][y].needsUpdate = false
                         }
                     }
                 }

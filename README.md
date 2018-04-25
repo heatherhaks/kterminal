@@ -79,7 +79,9 @@ kterminal.clear(2, // starting x
 
 ```
 kTerminal.update()
-//if using a viewport, use viewport.update() here
+
+//if using a viewport, use viewport.apply() here
+
 batch.begin()
 batch.draw(kTerminal.texture, // the texture
            0,  // x position

@@ -1,0 +1,27 @@
+buildscript {
+  ext {
+    gdxVersion = '1.9.8'
+    kotlin_version = '1.1.4-3'
+  }
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+  }
+}
+
+apply plugin: 'kotlin'
+
+sourceCompatibility = 1.6
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+sourceSets {
+  main.kotlin.srcDirs += 'src'
+}
+
+dependencies{
+  compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  compile "io.github.libktx:ktx-app:1.9.8-b2"
+}

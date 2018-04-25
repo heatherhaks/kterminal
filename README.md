@@ -20,6 +20,21 @@ Here's an [example project](https://github.com/heatherhaks/KTerminalExample/) sh
 
 Using KTerminal should be easy.
 
+### Adding to Gradle
+
+```
+allprojects {
+        repositories {
+            ...
+            maven { url 'https://jitpack.io' }
+        }
+    }
+        ....
+            dependencies {
+            compile 'com.github.heatherhaks:kterminal:-SNAPSHOT'
+    }
+```
+
 ### Initialization
 
 ```

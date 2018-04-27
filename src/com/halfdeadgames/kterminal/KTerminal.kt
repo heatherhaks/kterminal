@@ -222,7 +222,10 @@ class KTerminal(width: Int,
         }
     private var needsUpdate = true
 
-    var texture: Texture
+    val textureRegion
+        get() : TextureRegion {
+            return offScreenRenderer.textureRegion
+        }
 
     init {
         this.scale = scale
@@ -251,7 +254,7 @@ class KTerminal(width: Int,
         offScreenRenderer = OffScreenRenderer(width = width * scaledCharacterSize,
                 height = height * scaledCharacterSize, batch = inputBatch)
 
-        texture = offScreenRenderer.getBufferTexture()
+        //texture = offScreenRenderer.texture
 
         clear()
         update()
@@ -361,7 +364,7 @@ class KTerminal(width: Int,
     fun clear() {
         clear(0, 0, width, height)
     }
-    
+
     fun update() {
         if(needsUpdate) {
             offScreenRenderer.render {
@@ -394,7 +397,7 @@ class KTerminal(width: Int,
     override fun dispose() {
         glyphTexture.dispose()
         backgroundTexture.dispose()
-        texture.dispose()
+        //texture.dispose()
         offScreenRenderer.dispose()
     }
 }

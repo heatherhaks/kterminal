@@ -27,6 +27,9 @@ class OffScreenRenderer(var width: Int, var height: Int, private val batch: Batc
     fun render(batchColor: Color = Color.WHITE, clearColor: Color = Color.CLEAR, scissor: Boolean = false, block: (Batch) -> Unit): Texture {
         buffer.use {
             // clearing the color here to due a bug where fading a modal in or out changes the color of the batch and can affect the background opacity
+            
+            //IF you have an FBO that you are going to be drawing to with transparency, set your FBO clear color to 1.0f, 1.0f, 1.0f, 0.0f
+            //that is, tranparent white
             if(clearScreen) clearScreen()
             if(scissor) glViewport(0, 0, width, height)
             batch.use(batchColor) {

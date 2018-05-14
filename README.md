@@ -68,11 +68,7 @@ kTerminal.write("Example string.")
 //setting the position/color while writing
 kTerminal[x, y].write(exampleGlyph)
 kTerminal[x, y][foregroundColor, backgroundColor].write('#')
-kTerminal.write(2,  // x position
-                3,  // y position
-                '@',    // character to be written
-                Color.YELLOW, // foreground color - optional
-                Color.BLACK) // background color - optional
+
 ```
 
 ### Clearing

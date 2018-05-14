@@ -118,7 +118,10 @@ class KTerminalRenderer(tilesetFile: String,
                         y + ((kTerminalData.height - j - 1) * scaledCharacterSize).toFloat(),
                         scaledCharacterSize.toFloat(),
                         scaledCharacterSize.toFloat())
-
+            }
+        }
+        for(i in 0 until kTerminalData.width) {
+            for(j in 0 until kTerminalData.height) {
                 batch.color = kTerminalData.terminal[i][j].foregroundColor
                 batch.draw( glyphs[kTerminalData.terminal[i][j].char.toInt()],
                         x + (i * scaledCharacterSize).toFloat(),

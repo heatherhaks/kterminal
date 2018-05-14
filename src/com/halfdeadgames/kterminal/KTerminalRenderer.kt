@@ -33,7 +33,6 @@ class KTerminalRenderer(tilesetFile: String,
         val pixmap = Pixmap(Gdx.files.internal(tilesetFile))
         characterSize = pixmap.width / 16
         scaledCharacterSize = (characterSize * this.scale).toInt()
-        println(scaledCharacterSize)
         val resultPixmap = Pixmap(pixmap.width, pixmap.height, Pixmap.Format.RGBA8888)
         val whitePixmap = Pixmap(pixmap.width, pixmap.height, Pixmap.Format.RGBA8888)
         whitePixmap.setColor(Color.WHITE)

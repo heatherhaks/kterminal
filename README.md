@@ -104,7 +104,7 @@ kTerminal[4, 5].clear(width = 3, height = 4)
 kTerminal.clearAll()
 ```
 
-### Displaying the terminal texture
+### Rendering
 
 ```
 //this would go in your main rendering loop

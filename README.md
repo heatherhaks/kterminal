@@ -38,54 +38,69 @@ allprojects {
 ### Initialization
 
 ```
-var kTerminal: KTerminal = KTerminal(
-                width = 33, // width in characters
-                height = 20, // height in characters
-                tilesetFile = "fontSheetName.png", // the name of the font sheet being used
-                scale = 1f, // Between 0 and 1 to make it smaller, higher than 1 to make it bigger.
-                defaultForegroundColor = Color.WHITE,
-                defaultBackgroundColor = Color.BLACK,
-                inputBatch = batch)
+val kTerminalData = KTerminalData(
+        width = 33, // width in characters
+        height = 20, // height in characters
+        defaultForeground = Color.WHITE,
+        defaultBackground = Color.BLACK)
+
+val kTerminalRenderer = KTerminalRenderer(
+        tilesetFile = "fontSheetName.png", //the name of the font sheet
+        scale = 1f // Between 0 and 1 to make it smaller, higher than 1 to make it bigger
+        batch = spriteBatch) // the spritebatch to be used in rendering
+        
+val exampleGlyph(
+        char = '@',
+        foregroundColor = Color.YELLOW,
+        backgroundColor = Color.BLACK)
 ```
 
 ### Writing
 
+KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input position and color information in brackets like in the following examples, but doing so is optional for both position and color. One can also pass a cursor into the write function to override the terminal's internal cursor. There are also several functions for shape drawing.
+
 ```
+//setting cursor info
+kTerminal[x, y][Color.GREEN, Color(0f, 0f, 1f, 0.5f)]
+//using the current settings of the internal cursor:
+kTerminal.write("Example string.")
+
+//setting the position/color while writing
+kTerminal[x, y].write(exampleGlyph)
+kTerminal[x, y][foregroundColor, backgroundColor].write('#')
 kTerminal.write(2,  // x position
                 3,  // y position
                 '@',    // character to be written
                 Color.YELLOW, // foreground color - optional
                 Color.BLACK) // background color - optional
-
-// this is the same as the above, but allows you to reuse cells, like for standard items
-var dataCell = KTerminalDataCell('@', Color.WHITE, Color.BLACK)
-kTerminal.write(x, y, dataCell)
 ```
 
 ### Clearing
 
-```
-kterminal.clear() //clears entire terminal
-kterminal.clear(4, 8) // clears a specific cell
+Clearing uses the same syntax as writing, but ignores the cursor's color data and resets the values to the default values. If you want to clear to a specific color, use write instead.
 
-//the following would clear a rectangular area
-kterminal.clear(2, // starting x
-                5, // starting y
-                4, // width
-                3) // height
+```
+//clear one character
+kTerminal[3, 4].clear()
+
+//clear a rectangle
+kTerminal[4, 5].clear(width = 3, height = 4)
+
+//clear the whole terminal, ignores all cursor data
+kTerminal.clearAll()
 ```
 
 ### Displaying the terminal texture
 
 ```
-kTerminal.update()
-
-//if using a viewport, use viewport.apply() here
-
+//this would go in your main rendering loop
 batch.begin()
-batch.draw(kTerminal.texture, // the texture
-           0,  // x position
-           100) // y position
+
+//x and y are the bottom left corner of the terminal image
+//multiple terminals can be drawn with the same renderer
+kTerminalRenderer.render(x, y, exampleKTerminalDataOne)
+kTerminalRenderer.render(x, y, exampleKTerminalDataTwo)
+
 batch.end()
 ```
 

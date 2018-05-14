@@ -12,9 +12,9 @@ The goal of this project was to make an efficient, small way to emulate a termin
 - Only updates the texture when the terminal is written to.
 
 ## Example Project
-Here's an [example project](https://github.com/heatherhaks/KTerminalExample/) showing off the features of KTerminal.
+Here's an [example project](https://github.com/heatherhaks/KTerminalColorPicker/) showing off the features of KTerminal.
 
-![screenshot](https://i.imgur.com/CQiJlpN.gif)
+![screenshot](https://i.imgur.com/p7YSawF.gif)
 
 ## Usage
 

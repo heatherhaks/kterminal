@@ -2,14 +2,12 @@
 
 KTerminal is a terminal emulator written in [Kotlin](https://kotlinlang.org/) using [libGDX](http://libgdx.badlogicgames.com/) and [libKTX](https://libktx.github.io/). It was inspired by [AsciiTerminal](https://github.com/julianmaster/AsciiTerminal).
 
-The goal of this project was to make an efficient, small way to emulate a terminal. Some terminal emulators I've seen have extra functions, like the ability to write a string to the terminal. I decided that such logic should exist outside of the basic emulator, which is why this project seems so bare bones.
+The goal of this project was to make an efficient, small way to emulate a terminal.
 
 ## Features
 
 - Supports 256 Extended Ascii ([IBM Code Page 437](https://en.wikipedia.org/wiki/Code_page_437)) font sheets, in a 16x16 square layout with no buffers around the glyphs. Dwarf Fortress font sheets are compatible if they're square.
 - Full color support for each glyph, including foreground color, background color, and transparency.
-- Outputs a single texture for ease of use with however you display graphics.
-- Only updates the texture when the terminal is written to.
 
 ## Example Project
 Here's an [example project](https://github.com/heatherhaks/KTerminalColorPicker/) showing off the features of KTerminal.

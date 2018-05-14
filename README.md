@@ -57,7 +57,7 @@ val exampleGlyph(
 
 ### Writing
 
-KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input position and color information in brackets like in the following examples, but doing so is optional for both position and color. One can also pass a cursor into the write function to override the terminal's internal cursor. There are also several functions for shape drawing.
+KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input position and color information in brackets like in the following examples, but doing so is optional for both position and color. There are also several functions for shape drawing.
 
 ```
 //setting cursor info
@@ -69,6 +69,26 @@ kTerminal.write("Example string.")
 kTerminal[x, y].write(exampleGlyph)
 kTerminal[x, y][foregroundColor, backgroundColor].write('#')
 
+//shape drawing
+kTerminal[x, y][foregroundColor, backgroundColor].drawRect(
+        width = 3
+        height = 4,
+        char = ' '
+        isFilled = true) // whether it's filled or just the outline
+        
+//doesn't have to be a straight line
+kTerminal[x, y].drawLine(endX, endY, '#')
+
+//a hollow rect where you can specify different characters for each corner and horizontal and vertical sides
+kTerminal.drawBox(
+        width = 5,
+        height = 10,
+        topLeft = '*',
+        topRight = '*',
+        bottomLeft = '*',
+        bottomRight = '*',
+        horizontal = '-',
+        vertical = '|')
 ```
 
 ### Clearing

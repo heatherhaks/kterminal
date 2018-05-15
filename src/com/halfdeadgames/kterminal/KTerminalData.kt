@@ -62,8 +62,8 @@ class KTerminalData(width: Int,
         fun set(x: Int, y: Int, foregroundColor: Color, backgroundColor: Color) {
             this.x = x
             this.y = y
-            this.foregroundColor = foregroundColor
-            this.backgroundColor = backgroundColor
+            this.foregroundColor = foregroundColor.cpy()
+            this.backgroundColor = backgroundColor.cpy()
         }
         fun set(x: Int, y: Int) {
             this.x = x

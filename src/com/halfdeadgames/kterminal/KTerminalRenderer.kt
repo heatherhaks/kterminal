@@ -24,7 +24,7 @@ class KTerminalRenderer(tilesetFile: String,
             if(value > 0f) {
                 field = value
             } else {
-                throw IllegalArgumentException("Scale can't be 0 or below.")
+                scale = 0f
             }
         }
 
@@ -109,8 +109,9 @@ class KTerminalRenderer(tilesetFile: String,
 
     fun render(x: Int, y: Int, kTerminalData: KTerminalData) {
         val originalColor = batch.color
-        for(i in 0 until kTerminalData.width) {
-            for(j in 0 until kTerminalData.height) {
+
+        for(j in 0 until kTerminalData.height) {
+            for(i in 0 until kTerminalData.width) {
                 batch.color = kTerminalData.terminal[i][j].backgroundColor
                 batch.draw( backgroundTexture,
                         x + (i * scaledCharacterSize).toFloat(),
@@ -119,8 +120,8 @@ class KTerminalRenderer(tilesetFile: String,
                         scaledCharacterSize.toFloat())
             }
         }
-        for(i in 0 until kTerminalData.width) {
-            for(j in 0 until kTerminalData.height) {
+        for(j in 0 until kTerminalData.height) {
+            for(i in 0 until kTerminalData.width) {
                 batch.color = kTerminalData.terminal[i][j].foregroundColor
                 batch.draw( glyphs[kTerminalData.terminal[i][j].char.toInt()],
                         x + (i * scaledCharacterSize).toFloat(),

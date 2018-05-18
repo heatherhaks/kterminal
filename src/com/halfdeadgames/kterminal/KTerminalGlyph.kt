@@ -10,4 +10,8 @@ data class KTerminalGlyph(var char: Char,
         this.foregroundColor = foregroundColor
         this.backgroundColor = backgroundColor
     }
+    
+    fun set(glyph: KTerminalGlyph) {
+        set(glyph.char, glyph.foregroundColor, glyph.backgroundColor)
+    }
 }

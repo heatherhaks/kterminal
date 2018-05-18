@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color
 
 class KTerminalData(width: Int,
                     height: Int,
-                    var defaultForeground: Color = Color.WHITE,
-                    var defaultBackground: Color = Color.BLACK
+                    var defaultForeground: Color = Color.WHITE.cpy(),
+                    var defaultBackground: Color = Color.BLACK.cpy()
 ) {
     var width: Int = width
         set(value) {
@@ -160,7 +160,7 @@ class KTerminalData(width: Int,
 
     fun drawRect(width: Int,
                  height: Int,
-                 char: Char,
+                 char: Char = ' ',
                  isFilled: Boolean = true,
                  cursor: Cursor? = null) {
         if(cursor == null) {
@@ -294,6 +294,28 @@ class KTerminalData(width: Int,
         write(bottomLeft, workingCursor)
         workingCursor.set(startX + width - 1, startY + height - 1)
         write(bottomRight, workingCursor)
+    }
+
+    fun drawDoubleBox(width: Int, height: Int, cursor: Cursor? = null) {
+        drawBox(width, height,
+                KTerminalData.BOX_DOUBLE_DOWN_RIGHT,
+                KTerminalData.BOX_DOUBLE_DOWN_LEFT,
+                KTerminalData.BOX_DOUBLE_UP_RIGHT,
+                KTerminalData.BOX_DOUBLE_UP_LEFT,
+                KTerminalData.BOX_DOUBLE_HORIZONTAL,
+                KTerminalData.BOX_DOUBLE_VERTICAL,
+                cursor)
+    }
+
+    fun drawSingleBox(width: Int, height: Int, cursor: Cursor? = null) {
+        drawBox(width, height,
+                KTerminalData.BOX_SINGLE_DOWN_RIGHT,
+                KTerminalData.BOX_SINGLE_DOWN_LEFT,
+                KTerminalData.BOX_SINGLE_UP_RIGHT,
+                KTerminalData.BOX_SINGLE_UP_LEFT,
+                KTerminalData.BOX_SINGLE_HORIZONTAL,
+                KTerminalData.BOX_SINGLE_VERTICAL,
+                cursor)
     }
 
     override fun toString(): String {

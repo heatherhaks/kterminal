@@ -53,6 +53,11 @@ val exampleGlyph(
         backgroundColor = Color.BLACK)
 ```
 
+### Changing Terminal Font
+```
+kTerminalRenderer.set(tilesetFile = "otherFontSheet.png", scale = 1f)
+```
+
 ### Writing
 
 KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input position and color information in brackets like in the following examples, but doing so is optional for both position and color. There are also several functions for shape drawing.

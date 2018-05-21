@@ -24,11 +24,27 @@ class KTerminalData(width: Int,
             }
         }
 
-    val terminal = Array(width, {
+    var terminal = Array(width, {
         Array(height, {
             KTerminalGlyph(' ', defaultForeground, defaultBackground)
         })
     })
+
+    //will not preserve terminal data
+    fun resize(width: Int, height: Int, defaultForeground: Color, defaultBackground: Color) {
+        this.width = width
+        this.height = height
+        this.defaultForeground = defaultForeground
+        this.defaultBackground = defaultBackground
+
+        terminal = Array(width, {
+            Array(height, {
+                KTerminalGlyph(' ', defaultForeground, defaultBackground)
+            })
+        })
+
+        println(terminal.size)
+    }
 
     inner class Cursor(x: Int, y: Int, var foregroundColor: Color, var backgroundColor: Color) {
         var x: Int = x

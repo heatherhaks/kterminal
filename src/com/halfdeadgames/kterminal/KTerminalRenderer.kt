@@ -114,7 +114,7 @@ class KTerminalRenderer(tilesetFile: String,
         return glyphOutput
     }
 
-    fun render(x: Int, y: Int, kTerminalData: KTerminalData) {
+    fun render(x: Float, y: Float, kTerminalData: KTerminalData) {
         val originalColor = batch.color
 
         for(j in 0 until kTerminalData.height) {

@@ -49,8 +49,8 @@ val kTerminalRenderer = KTerminalRenderer(
         
 val exampleGlyph(
         char = '@',
-        foregroundColor = Color.YELLOW,
-        backgroundColor = Color.BLACK)
+        foreground = Color.YELLOW,
+        background = Color.BLACK)
 ```
 
 ### Changing Terminal Font
@@ -69,26 +69,26 @@ KTerminal has an internal cursor that stores the starting position for writing a
 
 ```
 //setting cursor info
-kTerminal[x, y][Color.GREEN, Color(0f, 0f, 1f, 0.5f)]
+kTerminalData[x, y][Color.GREEN, Color(0f, 0f, 1f, 0.5f)]
 //using the current settings of the internal cursor:
-kTerminal.write("Example string.")
+kTerminalData.write("Example string.")
 
 //setting the position/color while writing
-kTerminal[x, y].write(exampleGlyph)
-kTerminal[x, y][foregroundColor, backgroundColor].write('#')
+kTerminalData[x, y].write(exampleGlyph)
+kTerminalData[x, y][foregroundColor, backgroundColor].write('#')
 
 //shape drawing
-kTerminal[x, y][foregroundColor, backgroundColor].drawRect(
+kTerminalData[x, y][foregroundColor, backgroundColor].drawRect(
         width = 3
         height = 4,
         char = ' '
         isFilled = true) // whether it's filled or just the outline
         
 //doesn't have to be a straight line
-kTerminal[x, y].drawLine(endX, endY, '#')
+kTerminalData[x, y].drawLine(endX, endY, '#')
 
 //a hollow rect where you can specify different characters for each corner and horizontal and vertical sides
-kTerminal.drawBox(
+kTerminalData.drawBox(
         width = 5,
         height = 10,
         topLeft = '*',
@@ -105,13 +105,13 @@ Clearing uses the same syntax as writing, but ignores the cursor's color data an
 
 ```
 //clear one character
-kTerminal[3, 4].clear()
+kTerminalData[3, 4].clear()
 
 //clear a rectangle
-kTerminal[4, 5].clear(width = 3, height = 4)
+kTerminalData[4, 5].clear(width = 3, height = 4)
 
 //clear the whole terminal, ignores all cursor data
-kTerminal.clearAll()
+kTerminalData.clearAll()
 ```
 
 ### Rendering
@@ -131,5 +131,5 @@ batch.end()
 ### Disposing
 
 ```
-kTerminal.dispose()
+kTerminalRenderer.dispose()
 ```

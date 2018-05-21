@@ -14,16 +14,20 @@ class KTerminalRenderer(tilesetFile: String,
                         private val batch: SpriteBatch
 ) : Disposable {
 
-    private val glyphTexture: Texture
-    private val glyphs: Array<TextureRegion?>
-    private val backgroundTexture: Texture
+    private lateinit var glyphTexture: Texture
+    private lateinit var glyphs: Array<TextureRegion?>
+    private lateinit var backgroundTexture: Texture
 
-    private val glyphWidth: Int
-    private val glyphHeight: Int
-    private val scaledGlyphHeight: Float
-    private val scaledGlyphWidth: Float
+    private  var glyphWidth: Int = 0
+    private var glyphHeight: Int = 0
+    private var scaledGlyphHeight: Float = 0f
+    private var scaledGlyphWidth: Float = 0f
 
     init{
+        init(tilesetFile, scale)
+    }
+
+    private fun init(tilesetFile: String, scale: Float = 1f) {
         val pixmap = Pixmap(Gdx.files.internal(tilesetFile))
 
         glyphWidth = pixmap.width / 16
@@ -46,6 +50,11 @@ class KTerminalRenderer(tilesetFile: String,
         resultPixmap.dispose()
 
         glyphs = getGlyphs()
+    }
+
+    fun set(tilesetFile: String, scale: Float = 1f) {
+        dispose()
+        init(tilesetFile, scale)
     }
 
     private fun fillBuffers(buffer: ByteBuffer, resultBuffer: ByteBuffer, pixmap: Pixmap) {

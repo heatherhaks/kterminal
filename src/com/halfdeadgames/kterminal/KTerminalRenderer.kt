@@ -11,28 +11,26 @@ import java.nio.ByteBuffer
 
 class KTerminalRenderer(tilesetFile: String,
                         scale: Float = 1f,
-                        val batch: SpriteBatch
+                        private val batch: SpriteBatch
 ) : Disposable {
 
-    private var glyphTexture: Texture
-    private var glyphs: Array<TextureRegion?>
-    private var backgroundTexture: Texture
-    var characterSize: Int = 0
-    var scaledCharacterSize: Int = 0
-    var scale: Float = 1f
-        set(value) {
-            if(value > 0f) {
-                field = value
-            } else {
-                scale = 0f
-            }
-        }
+    private val glyphTexture: Texture
+    private val glyphs: Array<TextureRegion?>
+    private val backgroundTexture: Texture
+
+    private val glyphWidth: Int
+    private val glyphHeight: Int
+    private val scaledGlyphHeight: Float
+    private val scaledGlyphWidth: Float
 
     init{
-        this.scale = scale
         val pixmap = Pixmap(Gdx.files.internal(tilesetFile))
-        characterSize = pixmap.width / 16
-        scaledCharacterSize = (characterSize * this.scale).toInt()
+
+        glyphWidth = pixmap.width / 16
+        glyphHeight = pixmap.height / 16
+        scaledGlyphWidth = glyphWidth * scale
+        scaledGlyphHeight = glyphHeight * scale
+
         val resultPixmap = Pixmap(pixmap.width, pixmap.height, Pixmap.Format.RGBA8888)
         val whitePixmap = Pixmap(pixmap.width, pixmap.height, Pixmap.Format.RGBA8888)
         whitePixmap.setColor(Color.WHITE)
@@ -98,10 +96,10 @@ class KTerminalRenderer(tilesetFile: String,
     private fun getGlyphs(): Array<TextureRegion?> {
         val glyphOutput: Array<TextureRegion?> = arrayOfNulls(256)
         for (i in 0..255) {
-            val x = i % 16 * characterSize
-            val y = i / 16 * characterSize
+            val x = i % 16 * glyphWidth
+            val y = i / 16 * glyphHeight
 
-            glyphOutput[i] = TextureRegion(glyphTexture, x, y, characterSize, characterSize)
+            glyphOutput[i] = TextureRegion(glyphTexture, x, y, glyphWidth, glyphHeight)
         }
 
         return glyphOutput
@@ -114,20 +112,20 @@ class KTerminalRenderer(tilesetFile: String,
             for(i in 0 until kTerminalData.width) {
                 batch.color = kTerminalData.terminal[i][j].backgroundColor
                 batch.draw( backgroundTexture,
-                        x + (i * scaledCharacterSize).toFloat(),
-                        y + ((kTerminalData.height - j - 1) * scaledCharacterSize).toFloat(),
-                        scaledCharacterSize.toFloat(),
-                        scaledCharacterSize.toFloat())
+                        x + (i * scaledGlyphWidth),
+                        y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
+                        scaledGlyphWidth,
+                        scaledGlyphHeight)
             }
         }
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
                 batch.color = kTerminalData.terminal[i][j].foregroundColor
                 batch.draw( glyphs[kTerminalData.terminal[i][j].char.toInt()],
-                        x + (i * scaledCharacterSize).toFloat(),
-                        y + ((kTerminalData.height - j - 1) * scaledCharacterSize.toFloat()),
-                        scaledCharacterSize.toFloat(),
-                        scaledCharacterSize.toFloat())
+                        x + (i * scaledGlyphWidth),
+                        y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
+                        scaledGlyphWidth,
+                        scaledGlyphHeight)
             }
         }
         batch.color = originalColor

@@ -119,7 +119,7 @@ class KTerminalRenderer(tilesetFile: String,
 
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
-                batch.color = kTerminalData.terminal[i][j].backgroundColor
+                batch.color = kTerminalData.terminal[i][j].background
                 batch.draw( backgroundTexture,
                         x + (i * scaledGlyphWidth),
                         y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
@@ -129,7 +129,7 @@ class KTerminalRenderer(tilesetFile: String,
         }
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
-                batch.color = kTerminalData.terminal[i][j].foregroundColor
+                batch.color = kTerminalData.terminal[i][j].foreground
                 batch.draw( glyphs[kTerminalData.terminal[i][j].char.toInt()],
                         x + (i * scaledGlyphWidth),
                         y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),

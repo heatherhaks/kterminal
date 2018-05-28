@@ -122,8 +122,8 @@ class KTerminalData(width: Int,
             workingCursor.set(cursor)
         }
 
-        workingCursor.foregroundColor = glyph.foregroundColor
-        workingCursor.backgroundColor = glyph.backgroundColor
+        workingCursor.foregroundColor = glyph.foreground
+        workingCursor.backgroundColor = glyph.background
 
         write(glyph.char, workingCursor)
     }
@@ -137,8 +137,8 @@ class KTerminalData(width: Int,
 
         terminal[workingCursor.x][workingCursor.y].apply {
             this.char = char
-            this.foregroundColor = workingCursor.foregroundColor
-            this.backgroundColor = workingCursor.backgroundColor
+            this.foreground = workingCursor.foregroundColor
+            this.background = workingCursor.backgroundColor
         }
     }
 

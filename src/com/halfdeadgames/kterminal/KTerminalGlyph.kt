@@ -7,11 +7,15 @@ data class KTerminalGlyph(var char: Char,
                           var background: Color) {
     fun set(char: Char, foregroundColor: Color, backgroundColor: Color) {
         this.char = char
-        this.foreground = foregroundColor
-        this.background = backgroundColor
+        this.foreground = foregroundColor.cpy()
+        this.background = backgroundColor.cpy()
     }
 
     fun set(glyph: KTerminalGlyph) {
         set(glyph.char, glyph.foreground, glyph.background)
+    }
+
+    fun copy() : KTerminalGlyph {
+        return KTerminalGlyph(char,  foreground.cpy(), background.cpy())
     }
 }

@@ -136,8 +136,8 @@ class KTerminalRenderer(tilesetFile: String,
                 batch.color = kTerminalData.terminal[i][j].foreground
 
                 val glyph = kTerminalData.terminal[i][j]
-                val scaleX = if(glyph.isFlippedY) -1f else 1f
-                val scaleY = if(glyph.isFlippedX) -1f else 1f
+                val scaleX = if(glyph.isFlippedY) -glyph.scale else glyph.scale
+                val scaleY = if(glyph.isFlippedX) -glyph.scale else glyph.scale
 
                 batch.draw( glyphs[glyph.char.toInt()],
                 x + (i * scaledGlyphWidth),

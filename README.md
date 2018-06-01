@@ -8,6 +8,7 @@ The goal of this project was to make an efficient, small way to emulate a termin
 
 - Supports 256 Extended Ascii ([IBM Code Page 437](https://en.wikipedia.org/wiki/Code_page_437)) font sheets, in a 16x16 layout with no buffers around the glyphs. Dwarf Fortress font sheets are compatible. Font sheets do not have to be square.
 - Full color support for each glyph, including foreground color, background color, and transparency.
+- Vertical and horizontal flipping, rotation, and scaling of each glyph
 
 ## Example Project
 Here's an [example project](https://github.com/heatherhaks/KTerminalColorPicker/) showing off the features of KTerminal.
@@ -50,7 +51,11 @@ val kTerminalRenderer = KTerminalRenderer(
 val exampleGlyph(
         char = '@',
         foreground = Color.YELLOW,
-        background = Color.BLACK)
+        background = Color.BLACK,
+        rotation = 45f,
+        scale = 0.5f,
+        isFlippedX = true,
+        isFlippedY = false)
 ```
 
 ### Changing Terminal Font
@@ -68,6 +73,16 @@ kTerminalData.resize(width = 80, height = 60)
 KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input position and color information in brackets like in the following examples, but doing so is optional for both position and color. There are also several functions for shape drawing.
 
 ```
+//possible cursor settings, can be called in any order right after eachother
+        //position
+        kTerminalData[x, y]
+        //color
+        kTerminalData[foreground, background]
+        //rotation/scaling
+        kTerminalData[rotationInDegrees, scale]
+        //flipping
+        kTerminalData[isFlippedX, isFlippedY]
+        
 //setting cursor info
 kTerminalData[x, y][Color.GREEN, Color(0f, 0f, 1f, 0.5f)]
 //using the current settings of the internal cursor:

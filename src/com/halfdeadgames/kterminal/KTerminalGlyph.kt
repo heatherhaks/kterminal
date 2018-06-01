@@ -7,7 +7,7 @@ data class KTerminalGlyph @JvmOverloads constructor(var char: Char,
                           var background: Color,
                           var rotation: Float = 0f,
                           var isFlippedX: Boolean = false,
-                          var isFlippedY: Boolean = true) {
+                          var isFlippedY: Boolean = false) {
     @JvmOverloads fun set(char: Char, foregroundColor: Color, backgroundColor: Color, rotation: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         this.char = char
         this.foreground = foregroundColor.cpy()

@@ -72,7 +72,12 @@ kTerminalData.resize(width = 80, height = 60)
 
 KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input position and color information in brackets like in the following examples, but doing so is optional for both position and color. There are also several functions for shape drawing.
 
-```
+```     
+//setting cursor info
+kTerminalData[x, y][Color.GREEN, Color(0f, 0f, 1f, 0.5f)]
+//using the current settings of the internal cursor:
+kTerminalData.write("Example string.")
+
 //possible cursor settings, can be called in any order right after eachother
         //position
         kTerminalData[x, y]
@@ -82,15 +87,14 @@ KTerminal has an internal cursor that stores the starting position for writing a
         kTerminalData[rotationInDegrees, scale]
         //flipping
         kTerminalData[isFlippedX, isFlippedY]
-        
-//setting cursor info
-kTerminalData[x, y][Color.GREEN, Color(0f, 0f, 1f, 0.5f)]
-//using the current settings of the internal cursor:
-kTerminalData.write("Example string.")
 
 //setting the position/color while writing
 kTerminalData[x, y].write(exampleGlyph)
 kTerminalData[x, y][foregroundColor, backgroundColor].write('#')
+
+//java writing
+kTerminalData.setCursor(x, y, foregroundColor, backgroundColor);
+kTerminalData.write('#');
 
 //shape drawing
 kTerminalData[x, y][foregroundColor, backgroundColor].drawRect(

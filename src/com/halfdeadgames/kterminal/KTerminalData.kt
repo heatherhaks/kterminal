@@ -31,22 +31,18 @@ class KTerminalData(width: Int,
     })
 
     //will not preserve terminal data
-    fun resize(width: Int, height: Int, defaultForeground: Color, defaultBackground: Color) {
+    fun resize(width: Int, height: Int) {
         this.width = width
         this.height = height
-        this.defaultForeground = defaultForeground
-        this.defaultBackground = defaultBackground
 
         terminal = Array(width, {
             Array(height, {
                 KTerminalGlyph(' ', defaultForeground, defaultBackground)
             })
         })
-
-        println(terminal.size)
     }
 
-    inner class Cursor(x: Int, y: Int, var foregroundColor: Color, var backgroundColor: Color) {
+    inner class Cursor(x: Int, y: Int, var foregroundColor: Color, var backgroundColor: Color, var rotation: Float) {
         var x: Int = x
             set(value) {
                 var tempValue = value
@@ -75,6 +71,7 @@ class KTerminalData(width: Int,
 
                 field = tempValue
             }
+
         fun set(x: Int, y: Int, foregroundColor: Color, backgroundColor: Color) {
             this.x = x
             this.y = y
@@ -89,8 +86,8 @@ class KTerminalData(width: Int,
             set(cursor.x, cursor.y, cursor.foregroundColor, cursor.backgroundColor)
         }
     }
-    val cursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground)
-    val workingCursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground)
+    val cursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f)
+    val workingCursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f)
 
     fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Color = defaultForeground, backgroundColor: Color = defaultBackground) {
         cursor.set(x, y, foregroundColor, backgroundColor)
@@ -113,6 +110,10 @@ class KTerminalData(width: Int,
         cursor.foregroundColor = foregroundColor
         return this
     }
+    operator fun get(rotation: Float) : KTerminalData {
+        cursor.rotation = rotation
+        return this
+    }
 
     //override any color data given by the cursor
     fun write(glyph: KTerminalGlyph, cursor: Cursor? = null) {
@@ -124,6 +125,7 @@ class KTerminalData(width: Int,
 
         workingCursor.foregroundColor = glyph.foreground
         workingCursor.backgroundColor = glyph.background
+        workingCursor.rotation = glyph.rotation
 
         write(glyph.char, workingCursor)
     }
@@ -139,6 +141,7 @@ class KTerminalData(width: Int,
             this.char = char
             this.foreground = workingCursor.foregroundColor
             this.background = workingCursor.backgroundColor
+            this.rotation = workingCursor.rotation
         }
     }
 

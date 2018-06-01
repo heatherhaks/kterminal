@@ -4,13 +4,14 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Disposable
 import java.nio.ByteBuffer
 
 class KTerminalRenderer(tilesetFile: String,
-                        scale: Float = 1f,
+                        var scale: Float = 1f,
                         private val batch: SpriteBatch
 ) : Disposable {
 
@@ -133,17 +134,22 @@ class KTerminalRenderer(tilesetFile: String,
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
                 batch.color = kTerminalData.terminal[i][j].foreground
-                batch.draw( glyphs[kTerminalData.terminal[i][j].char.toInt()],
-                        x + (i * scaledGlyphWidth),
-                        y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
-                        scaledGlyphWidth / 2,
-                        scaledGlyphHeight / 2,
-                        scaledGlyphWidth,
-                        scaledGlyphHeight,
-                        1f,
-                        1f,
-                        (-kTerminalData.terminal[i][j].rotation + 90) % 360, //0 is no rotation, clockwise
-                        true)
+
+                val glyph = kTerminalData.terminal[i][j]
+                val scaleX = if(glyph.isFlippedY) -1f else 1f
+                val scaleY = if(glyph.isFlippedX) -1f else 1f
+
+                batch.draw( glyphs[glyph.char.toInt()],
+                x + (i * scaledGlyphWidth),
+                y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
+                scaledGlyphWidth / 2,
+                scaledGlyphHeight / 2,
+                scaledGlyphWidth,
+                scaledGlyphHeight,
+                scaleX,
+                scaleY,
+                (-glyph.rotation + 90) % 360, //0 is no rotation, clockwise
+                true)
             }
         }
         batch.color = originalColor

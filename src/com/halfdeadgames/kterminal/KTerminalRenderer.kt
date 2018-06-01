@@ -18,8 +18,10 @@ class KTerminalRenderer(tilesetFile: String,
     private lateinit var glyphs: Array<TextureRegion?>
     private lateinit var backgroundTexture: Texture
 
-    private  var glyphWidth: Int = 0
-    private var glyphHeight: Int = 0
+    var glyphWidth: Int = 0
+        private set
+    var glyphHeight: Int = 0
+        private set
     private var scaledGlyphHeight: Float = 0f
     private var scaledGlyphWidth: Float = 0f
 
@@ -127,14 +129,21 @@ class KTerminalRenderer(tilesetFile: String,
                         scaledGlyphHeight)
             }
         }
+
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
                 batch.color = kTerminalData.terminal[i][j].foreground
                 batch.draw( glyphs[kTerminalData.terminal[i][j].char.toInt()],
                         x + (i * scaledGlyphWidth),
                         y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
+                        scaledGlyphWidth / 2,
+                        scaledGlyphHeight / 2,
                         scaledGlyphWidth,
-                        scaledGlyphHeight)
+                        scaledGlyphHeight,
+                        1f,
+                        1f,
+                        (-kTerminalData.terminal[i][j].rotation + 90) % 360, //0 is no rotation, clockwise
+                        true)
             }
         }
         batch.color = originalColor

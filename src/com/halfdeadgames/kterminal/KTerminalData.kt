@@ -42,7 +42,7 @@ class KTerminalData(width: Int,
         })
     }
 
-    inner class Cursor(x: Int, y: Int, var foregroundColor: Color, var backgroundColor: Color, var rotation: Float) {
+    inner class Cursor(x: Int, y: Int, var foregroundColor: Color, var backgroundColor: Color, var rotation: Float, var isFlipped: Boolean) {
         var x: Int = x
             set(value) {
                 var tempValue = value
@@ -72,28 +72,30 @@ class KTerminalData(width: Int,
                 field = tempValue
             }
 
-        fun set(x: Int, y: Int, foregroundColor: Color, backgroundColor: Color) {
+        fun set(x: Int, y: Int, foregroundColor: Color, backgroundColor: Color, rotation: Float, isFlipped: Boolean) {
             this.x = x
             this.y = y
             this.foregroundColor = foregroundColor.cpy()
             this.backgroundColor = backgroundColor.cpy()
+            this.rotation = rotation
+            this.isFlipped = isFlipped
         }
         fun set(x: Int, y: Int) {
             this.x = x
             this.y = y
         }
         fun set(cursor: Cursor) {
-            set(cursor.x, cursor.y, cursor.foregroundColor, cursor.backgroundColor)
+            set(cursor.x, cursor.y, cursor.foregroundColor, cursor.backgroundColor, cursor.rotation, cursor.isFlipped)
         }
     }
-    val cursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f)
-    val workingCursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f)
+    val cursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f, false)
+    val workingCursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f, false)
 
-    @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Color = defaultForeground, backgroundColor: Color = defaultBackground) {
-        cursor.set(x, y, foregroundColor, backgroundColor)
+    @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Color = defaultForeground, backgroundColor: Color = defaultBackground, rotation: Float = 0f, isFlipped: Boolean = false) {
+        cursor.set(x, y, foregroundColor, backgroundColor, rotation, isFlipped)
     }
     fun resetCursor() {
-        cursor.set(0, 0, defaultForeground, defaultBackground)
+        cursor.set(0, 0, defaultForeground, defaultBackground, 0f, false)
     }
 
     operator fun get(x: Int, y: Int) : KTerminalData {
@@ -110,8 +112,9 @@ class KTerminalData(width: Int,
         cursor.foregroundColor = foregroundColor
         return this
     }
-    operator fun get(rotation: Float) : KTerminalData {
+    operator fun get(rotation: Float, isFlipped: Boolean) : KTerminalData {
         cursor.rotation = rotation
+        cursor.isFlipped = isFlipped
         return this
     }
 
@@ -126,6 +129,7 @@ class KTerminalData(width: Int,
         workingCursor.foregroundColor = glyph.foreground
         workingCursor.backgroundColor = glyph.background
         workingCursor.rotation = glyph.rotation
+        workingCursor.isFlipped = glyph.isFlipped
 
         write(glyph.char, workingCursor)
     }
@@ -142,6 +146,7 @@ class KTerminalData(width: Int,
             this.foreground = workingCursor.foregroundColor
             this.background = workingCursor.backgroundColor
             this.rotation = workingCursor.rotation
+            this.isFlipped = workingCursor.isFlipped
         }
     }
 
@@ -173,7 +178,7 @@ class KTerminalData(width: Int,
     }
 
     fun clearAll() {
-        workingCursor.set(0, 0, defaultForeground, defaultBackground)
+        workingCursor.set(0, 0, defaultForeground, defaultBackground, 0f, false)
         clear(width, height, workingCursor)
     }
 

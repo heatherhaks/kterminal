@@ -89,7 +89,7 @@ class KTerminalData(width: Int,
     val cursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f)
     val workingCursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f)
 
-    fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Color = defaultForeground, backgroundColor: Color = defaultBackground) {
+    @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Color = defaultForeground, backgroundColor: Color = defaultBackground) {
         cursor.set(x, y, foregroundColor, backgroundColor)
     }
     fun resetCursor() {
@@ -116,7 +116,7 @@ class KTerminalData(width: Int,
     }
 
     //override any color data given by the cursor
-    fun write(glyph: KTerminalGlyph, cursor: Cursor? = null) {
+    @JvmOverloads fun write(glyph: KTerminalGlyph, cursor: Cursor? = null) {
         if(cursor == null) {
             workingCursor.set(this.cursor)
         } else {
@@ -130,7 +130,7 @@ class KTerminalData(width: Int,
         write(glyph.char, workingCursor)
     }
 
-    fun write(char: Char, cursor: Cursor? = null) {
+    @JvmOverloads fun write(char: Char, cursor: Cursor? = null) {
         if(cursor == null) {
             workingCursor.set(this.cursor)
         } else {
@@ -145,7 +145,7 @@ class KTerminalData(width: Int,
         }
     }
 
-    fun write(string: String, cursor: Cursor? = null) {
+    @JvmOverloads fun write(string: String, cursor: Cursor? = null) {
         if(cursor == null) {
             workingCursor.set(this.cursor)
         } else {
@@ -159,7 +159,7 @@ class KTerminalData(width: Int,
         }
     }
 
-    fun clear(width: Int = 1, height: Int = 1, cursor: Cursor? = null) {
+    @JvmOverloads fun clear(width: Int = 1, height: Int = 1, cursor: Cursor? = null) {
         if(cursor == null) {
             workingCursor.set(this.cursor)
         } else {
@@ -177,7 +177,7 @@ class KTerminalData(width: Int,
         clear(width, height, workingCursor)
     }
 
-    fun drawRect(width: Int,
+    @JvmOverloads fun drawRect(width: Int,
                  height: Int,
                  char: Char = ' ',
                  isFilled: Boolean = true,
@@ -208,7 +208,7 @@ class KTerminalData(width: Int,
         }
     }
 
-    fun drawLine(endX: Int, endY: Int, char: Char, cursor: Cursor? = null) {
+    @JvmOverloads fun drawLine(endX: Int, endY: Int, char: Char, cursor: Cursor? = null) {
         if(cursor == null) {
             workingCursor.set(this.cursor)
         } else {
@@ -288,7 +288,7 @@ class KTerminalData(width: Int,
         }
     }
 
-    fun drawBox(width: Int, height: Int, topLeft: Char, topRight: Char, bottomLeft: Char, bottomRight: Char, horizontal: Char, vertical: Char, cursor: Cursor? = null) {
+    @JvmOverloads fun drawBox(width: Int, height: Int, topLeft: Char, topRight: Char, bottomLeft: Char, bottomRight: Char, horizontal: Char, vertical: Char, cursor: Cursor? = null) {
         if(cursor == null) {
             workingCursor.set(this.cursor)
         } else {
@@ -315,7 +315,7 @@ class KTerminalData(width: Int,
         write(bottomRight, workingCursor)
     }
 
-    fun drawDoubleBox(width: Int, height: Int, cursor: Cursor? = null) {
+    @JvmOverloads fun drawDoubleBox(width: Int, height: Int, cursor: Cursor? = null) {
         drawBox(width, height,
                 KTerminalData.BOX_DOUBLE_DOWN_RIGHT,
                 KTerminalData.BOX_DOUBLE_DOWN_LEFT,
@@ -326,7 +326,7 @@ class KTerminalData(width: Int,
                 cursor)
     }
 
-    fun drawSingleBox(width: Int, height: Int, cursor: Cursor? = null) {
+    @JvmOverloads fun drawSingleBox(width: Int, height: Int, cursor: Cursor? = null) {
         drawBox(width, height,
                 KTerminalData.BOX_SINGLE_DOWN_RIGHT,
                 KTerminalData.BOX_SINGLE_DOWN_LEFT,

@@ -15,6 +15,10 @@ Here's an [example project](https://github.com/heatherhaks/KTerminalColorPicker/
 
 ![screenshot](https://i.imgur.com/p7YSawF.gif)
 
+## Tutorial That Uses KTerminal
+
+An awesome person decided to use KTerminal to do a roguelike tutorial, so I thought I'd link it: https://github.com/Larkenx/kotlin-roguelike-tutorial
+
 ## Usage
 
 Using KTerminal should be easy.

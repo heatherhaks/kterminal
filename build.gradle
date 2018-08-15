@@ -11,6 +11,10 @@ buildscript {
   }
 }
 
+ext {
+  appName = "kterminal"
+}
+
 apply plugin: 'kotlin'
 apply plugin: "maven-publish"
 group = 'com.halfdeadgames'

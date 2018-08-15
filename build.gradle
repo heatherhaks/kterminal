@@ -25,3 +25,17 @@ dependencies{
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   compile "io.github.libktx:ktx-app:1.9.8-b2"
 }
+
+task sourceJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allJava
+}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact tasks.sourceJar
+            //artifact tasks.yourJavadocTask
+        }
+    }
+}

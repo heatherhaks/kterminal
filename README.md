@@ -26,15 +26,25 @@ Using KTerminal should be easy.
 ### Adding to Gradle
 
 ```
+//add the repository for jitpack
 allprojects {
-        repositories {
-            ...
-            maven { url 'https://jitpack.io' }
-        }
+    repositories {
+        //...
+        maven { url 'https://jitpack.io' }
     }
-        ....
-            dependencies {
-            compile 'com.github.heatherhaks:kterminal:-SNAPSHOT'
+}
+
+//add the dependency
+    //...
+    dependencies {
+        implementation 'com.github.heatherhaks:kterminal:-SNAPSHOT'
+    }
+    
+//you can also specify a version, which will get you sources as well, just change the version string
+//in this example, v1.0.4, to whatever the tag is for the release you want.
+    //...
+    dependencies {
+        implementation 'com.github.heatherhaks:kterminal:v1.0.4'
     }
 ```
 

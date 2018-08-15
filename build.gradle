@@ -14,10 +14,17 @@ buildscript {
 apply plugin: 'kotlin'
 
 sourceCompatibility = 1.6
+sourceSets.main.java.srcDirs = [ "src/" ]
+
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets {
   main.kotlin.srcDirs += 'src'
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
 }
 
 dependencies{
@@ -26,16 +33,15 @@ dependencies{
   compile "io.github.libktx:ktx-app:1.9.8-b2"
 }
 
-task sourceJar(type: Jar) {
-    classifier 'sources'
-    from sourceSets.main.allJava
-}
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        api(MavenPublication) {
+            groupId group
+            artifactId appName
+            
             from components.java
-            artifact tasks.sourceJar
-            //artifact tasks.yourJavadocTask
+            
+            artifact sourceJar
         }
     }
 }

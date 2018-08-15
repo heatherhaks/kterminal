@@ -12,6 +12,7 @@ buildscript {
 }
 
 apply plugin: 'kotlin'
+apply plugin: "maven-publish"
 
 sourceCompatibility = 1.6
 sourceSets.main.java.srcDirs = [ "src/" ]
@@ -28,9 +29,9 @@ dependencies{
   compile "io.github.libktx:ktx-app:1.9.8-b2"
 }
 
-task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
-    classifier "sources"
+task sourceJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 artifacts {

@@ -72,8 +72,19 @@ val kTerminalRenderer = KTerminalRenderer(
         scale = 1f // Between 0 and 1 to make it smaller, higher than 1 to make it bigger
         
         
+//glyphs can be set with a Char
 val exampleGlyph(
-        char = '@',
+        char = '@', // stored internally as the Int 64
+        foreground = Color.YELLOW,
+        background = Color.BLACK,
+        rotation = 45f,
+        scale = 0.5f,
+        isFlippedX = true,
+        isFlippedY = false)
+
+//glyphs can be set with an Int
+val exampleGlyph(
+        value = 64, //64's char value is @
         foreground = Color.YELLOW,
         background = Color.BLACK,
         rotation = 45f,
@@ -113,8 +124,9 @@ kTerminalData.write("Example string.")
         kTerminalData[isFlippedX, isFlippedY]
 
 //setting the position/color while writing
-kTerminalData[x, y].write(exampleGlyph)
-kTerminalData[x, y][foregroundColor, backgroundColor].write('#')
+kTerminalData[x, y].write(2) // writing with an Int
+kTerminalData[x, y].write(exampleGlyph) // writing with a KTerminalGlyph
+kTerminalData[x, y][foregroundColor, backgroundColor].write('#') // writing with a Char
 
 //java writing
 kTerminalData.setCursor(x, y, foregroundColor, backgroundColor);

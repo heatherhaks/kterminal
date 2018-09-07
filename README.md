@@ -1,14 +1,21 @@
 # KTerminal
 
-KTerminal is a terminal emulator written in [Kotlin](https://kotlinlang.org/) using [libGDX](http://libgdx.badlogicgames.com/) and [libKTX](https://libktx.github.io/). It was inspired by [AsciiTerminal](https://github.com/julianmaster/AsciiTerminal).
+KTerminal is a terminal display emulator written in [Kotlin](https://kotlinlang.org/) using [libGDX](http://libgdx.badlogicgames.com/) and [libKTX](https://libktx.github.io/). It was inspired by [AsciiTerminal](https://github.com/julianmaster/AsciiTerminal).
 
 The goal of this project was to make an efficient, small way to emulate a terminal.
 
 ## Features
 
-- Supports 256 Extended Ascii ([IBM Code Page 437](https://en.wikipedia.org/wiki/Code_page_437)) font sheets, in a 16x16 layout with no buffers around the glyphs. Dwarf Fortress font sheets are compatible. Font sheets do not have to be square.
+- Supports any rectangular font sheet made of glyphs of the same size, with no borders around the glyphs. Glyphs do not have to be square. In order for string and char writing to work properly a 256 Extended Ascii ([IBM Code Page 437](https://en.wikipedia.org/wiki/Code_page_437)) font sheet must be used in the formats shown in the example font sheets. Dwarf Fortress font sheets are compatible. Font sheets can contain any glyph and doesn't have to conform to the above mentioned standard, and can contain more than the 256 possible glyphs in said standard.
 - Full color support for each glyph, including foreground color, background color, and transparency.
 - Vertical and horizontal flipping, rotation, and scaling of each glyph
+
+## Example Font Sheets
+Here are two font sheets. Glyphs must be in the order shown in order for string and char writing to appear properly, so if you tell it to write an 'a' char, an 'a' glyph appears on the terminal display.
+
+![square layout](https://i.imgur.com/KkSCL0d.png)
+
+![irregular layout](https://i.imgur.com/lSbFY2n.png)
 
 ## Example Project
 Here's an [example project](https://github.com/heatherhaks/KTerminalColorPicker/) showing off the features of KTerminal.
@@ -58,9 +65,12 @@ val kTerminalData = KTerminalData(
         defaultBackground = Color.BLACK)
 
 val kTerminalRenderer = KTerminalRenderer(
-        tilesetFile = "fontSheetName.png", //the name of the font sheet
-        scale = 1f // Between 0 and 1 to make it smaller, higher than 1 to make it bigger
         batch = spriteBatch) // the spritebatch to be used in rendering
+        tilesetFile = "fontSheetName.png", //the name of the font sheet
+        columns = 16, // number of horizontal glyphs on the font sheet
+        rows = 16, // number of vertical glyphs on the font sheet
+        scale = 1f // Between 0 and 1 to make it smaller, higher than 1 to make it bigger
+        
         
 val exampleGlyph(
         char = '@',

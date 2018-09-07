@@ -10,9 +10,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Disposable
 import java.nio.ByteBuffer
 
-class KTerminalRenderer(tilesetFile: String,
-                        var scale: Float = 1f,
-                        private val batch: SpriteBatch
+class KTerminalRenderer(val batch: SpriteBatch,
+                        tilesetFile: String,
+                        var columns: Int = 16,
+                        var rows: Int = 16,
+                        scale: Float = 1f
 ) : Disposable {
 
     private lateinit var glyphTexture: Texture
@@ -33,8 +35,8 @@ class KTerminalRenderer(tilesetFile: String,
     private fun init(tilesetFile: String, scale: Float = 1f) {
         val pixmap = Pixmap(Gdx.files.internal(tilesetFile))
 
-        glyphWidth = pixmap.width / 16
-        glyphHeight = pixmap.height / 16
+        glyphWidth = pixmap.width / columns
+        glyphHeight = pixmap.height / rows
         scaledGlyphWidth = glyphWidth * scale
         scaledGlyphHeight = glyphHeight * scale
 
@@ -106,12 +108,14 @@ class KTerminalRenderer(tilesetFile: String,
     }
 
     private fun getGlyphs(): Array<TextureRegion?> {
-        val glyphOutput: Array<TextureRegion?> = arrayOfNulls(256)
-        for (i in 0..255) {
-            val x = i % 16 * glyphWidth
-            val y = i / 16 * glyphHeight
+        val glyphOutput: Array<TextureRegion?> = arrayOfNulls(columns * rows)
 
-            glyphOutput[i] = TextureRegion(glyphTexture, x, y, glyphWidth, glyphHeight)
+        var counter = 0
+        for(i in 0 until rows) {
+            for(j in 0 until columns) {
+                glyphOutput[counter] = TextureRegion(glyphTexture, j * glyphWidth, i * glyphHeight, glyphWidth, glyphHeight)
+                counter++
+            }
         }
 
         return glyphOutput

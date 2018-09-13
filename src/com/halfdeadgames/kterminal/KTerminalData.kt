@@ -203,14 +203,34 @@ class KTerminalData(width: Int,
         write(char.toInt())
     }
 
-    fun write(string: String) {
+
+    //0 == left to right
+    //1 == top to down
+    //2 == right to left
+    //3 == down to up
+
+    @JvmOverloads fun write(string: String, rotation: Int = 0) {
         var posX = cursor.x
         var posY = cursor.y
         string.toCharArray().forEach {
             workingCursor.set(posX, posY)
             write(it)
-            if(posX == width - 1) posY++
-            posX++
+
+            when(rotation) {
+                0 -> {
+                    posX++
+                }
+                1 -> {
+                    posY++
+                }
+                2 -> {
+                    posX--
+                }
+                3 -> {
+                    posY--
+                }
+            }
+
         }
     }
 

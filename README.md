@@ -128,6 +128,15 @@ kTerminalData[x, y].write(2) // writing with an Int
 kTerminalData[x, y].write(exampleGlyph) // writing with a KTerminalGlyph
 kTerminalData[x, y][foregroundColor, backgroundColor].write('#') // writing with a Char
 
+//writing a string, string writing supports rotation
+    //0 == left to right, this is the default
+    //1 == top to bottom
+    //2 == right to left
+    //3 == bottom to top
+
+kTerminalData.write("Test") // will go from cursor position left to right
+kTerminalData.write("Test", 1) // will go from cursor position top to bottom
+
 //shape drawing
 kTerminalData[x, y][foregroundColor, backgroundColor].drawRect(
         width = 3
@@ -176,6 +185,15 @@ kTerminalData.write("Example string.")
 kTerminalData.setPosition(1, 2).write(2) // writing with an Int
 kTerminalData.write(exampleGlyph) // writing with a KTerminalGlyph
 kTerminalData.setColor(Color.WHITE, Color.CLEAR).write('#') // writing with a Char
+
+//writing a string, string writing supports rotation
+    //0 == left to right, this is the default
+    //1 == top to bottom
+    //2 == right to left
+    //3 == bottom to top
+
+kTerminalData.write("Test") // will go from cursor position left to right
+kTerminalData.write("Test", 1) // will go from cursor position top to bottom
 
 //shape drawing
 kTerminalData.drawRect(

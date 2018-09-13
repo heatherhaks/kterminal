@@ -82,47 +82,87 @@ class KTerminalData(width: Int,
             this.isFlippedX = isFlippedX
             this.isFlippedY = isFlippedY
         }
+
         fun set(x: Int, y: Int) {
             this.x = x
             this.y = y
         }
+
         fun set(cursor: Cursor) {
             set(cursor.x, cursor.y, cursor.foregroundColor, cursor.backgroundColor, cursor.rotation, cursor.scale, cursor.isFlippedX, cursor.isFlippedY)
         }
     }
+
     val cursor: Cursor = Cursor(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
     val workingCursor: Cursor = Cursor(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
 
     @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Float = defaultForegroundColor, backgroundColor: Float = defaultBackgroundColor, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         cursor.set(x, y, foregroundColor, backgroundColor, rotation, scale,  isFlippedX, isFlippedY)
     }
+
+    @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Color, backgroundColor: Color, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
+        cursor.set(x, y, foregroundColor.toFloatBits(), backgroundColor.toFloatBits(), rotation, scale,  isFlippedX, isFlippedY)
+    }
+    
     fun resetCursor() {
         cursor.set(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
     }
-
-    operator fun get(x: Int, y: Int) : KTerminalData {
+    
+    fun setCursorPosition(x: Int, y: Int) : KTerminalData {
         cursor.x = x
         cursor.y = y
+
         return this
     }
-    operator fun get(foregroundColor: Float, backgroundColor: Float) : KTerminalData {
+
+    fun setCursorColor(foregroundColor: Float, backgroundColor: Float) : KTerminalData {
         cursor.foregroundColor = foregroundColor
         cursor.backgroundColor = backgroundColor
+
         return this
     }
-    operator fun get(foregroundColor: Float) : KTerminalData {
-        cursor.foregroundColor = foregroundColor
+
+    fun setCursorColor(foregroundColor: Color, backgroundColor: Color) : KTerminalData {
+        return setCursorColor(foregroundColor.toFloatBits(), backgroundColor.toFloatBits())
+    }
+
+    fun setCursorScale(scale: Float) : KTerminalData {
+        cursor.scale = scale
+
         return this
     }
-//    operator fun get(rotation: Float, scale: Float) : KTerminalData {
-//        cursor.rotation = rotation
-//        cursor.scale = scale
-//        return this
-//    }
-    operator fun get(isFlippedX: Boolean, isFlippedY: Boolean) : KTerminalData {
+
+    fun setCursorRotation(rotation: Float) : KTerminalData {
+        cursor.rotation = rotation
+
+        return this
+    }
+
+    fun setCursorFlip(isFlippedX: Boolean, isFlippedY: Boolean) : KTerminalData {
         cursor.isFlippedX = isFlippedX
         cursor.isFlippedY = isFlippedY
+
         return this
+    }
+
+    //position brackets
+    operator fun get(x: Int, y: Int) : KTerminalData {
+        return setCursorPosition(x, y)
+    }
+
+    //color brackets, can't do floats because rotation and scale use floats
+    operator fun get(foregroundColor: Color, backgroundColor: Color) : KTerminalData {
+        return setCursorColor(foregroundColor, backgroundColor)
+    }
+
+    //rotation and scale brackets
+    operator fun get(rotation: Float, scale: Float) : KTerminalData {
+        return setCursorRotation(rotation).setCursorScale(scale)
+    }
+
+    //flip status brackets
+    operator fun get(isFlippedX: Boolean, isFlippedY: Boolean) : KTerminalData {
+        return setCursorFlip(isFlippedX, isFlippedY)
     }
 
     //override any color data given by the cursor

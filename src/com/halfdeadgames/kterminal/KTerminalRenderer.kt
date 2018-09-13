@@ -143,17 +143,21 @@ class KTerminalRenderer(val batch: SpriteBatch,
                 val scaleX = if(glyph.isFlippedY) -glyph.scale else glyph.scale
                 val scaleY = if(glyph.isFlippedX) -glyph.scale else glyph.scale
 
-                batch.draw( glyphs[glyph.char.toInt()],
-                x + (i * scaledGlyphWidth),
-                y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
-                scaledGlyphWidth / 2,
-                scaledGlyphHeight / 2,
-                scaledGlyphWidth,
-                scaledGlyphHeight,
-                scaleX,
-                scaleY,
-                (-glyph.rotation + 90) % 360, //0 is no rotation, clockwise
-                true)
+                if(glyph.value >= columns * rows) {
+                    throw IllegalArgumentException("glyph value [${glyph.value}] exceeds found glyph count [${(columns * rows) - 1}]")
+                } else {
+                    batch.draw( glyphs[glyph.char.toInt()],
+                            x + (i * scaledGlyphWidth),
+                            y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
+                            scaledGlyphWidth / 2,
+                            scaledGlyphHeight / 2,
+                            scaledGlyphWidth,
+                            scaledGlyphHeight,
+                            scaleX,
+                            scaleY,
+                            (-glyph.rotation + 90) % 360, //0 is no rotation, clockwise
+                            true)
+                }
             }
         }
         batch.color = originalColor

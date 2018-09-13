@@ -203,34 +203,76 @@ class KTerminalData(width: Int,
         write(char.toInt())
     }
 
-
-    //0 == left to right
-    //1 == top to down
-    //2 == right to left
-    //3 == down to up
-
-    @JvmOverloads fun write(string: String, rotation: Int = 0) {
+    @JvmOverloads fun write(string: String, rotation: Int = 0, wrapping: Int = 0, respectEdges: Boolean = true) {
         var posX = cursor.x
         var posY = cursor.y
-        string.toCharArray().forEach {
-            workingCursor.set(posX, posY)
-            write(it)
+        var isWriting = true
 
-            when(rotation) {
-                0 -> {
-                    posX++
+        string.toCharArray().forEach {
+            if(isWriting) {
+                workingCursor.set(posX, posY)
+                write(it)
+
+                when(rotation) {
+                    WRITE_LEFT_TO_RIGHT -> posX++
+                    WRITE_TOP_TO_BOTTOM -> posY++
+                    WRITE_RIGHT_TO_LEFT -> posX--
+                    WRITE_BOTTOM_TO_TOP -> posY--
                 }
-                1 -> {
-                    posY++
-                }
-                2 -> {
-                    posX--
-                }
-                3 -> {
-                    posY--
+
+                when(rotation) {
+                    WRITE_LEFT_TO_RIGHT, WRITE_RIGHT_TO_LEFT -> {
+                        if(posX >= width) {
+                            posX = 0
+
+                            if(respectEdges) {
+                                isWriting = false
+                            } else {
+                                when(wrapping) {
+                                    WRAP_POSITIVE_SHIFT -> posY++
+                                    WRAP_NEGATIVE_SHIFT -> posY--
+                                }
+                            }
+                        } else if(posX < 0) {
+                            posX = width - 1
+
+                            if(respectEdges) {
+                                isWriting = false
+                            } else {
+                                when(wrapping) {
+                                    WRAP_POSITIVE_SHIFT -> posY++
+                                    WRAP_NEGATIVE_SHIFT -> posY--
+                                }
+                            }
+                        }
+                    }
+                    WRITE_TOP_TO_BOTTOM, WRITE_BOTTOM_TO_TOP -> {
+                        if(posY >= height) {
+                            posY = 0
+
+                            if(respectEdges) {
+                                isWriting = false
+                            } else {
+                                when(wrapping) {
+                                    WRAP_POSITIVE_SHIFT -> posX++
+                                    WRAP_NEGATIVE_SHIFT -> posX--
+                                }
+                            }
+                        } else if(posY < 0) {
+                            posY = height - 1
+
+                            if(respectEdges) {
+                                isWriting = false
+                            } else {
+                                when(wrapping) {
+                                    WRAP_POSITIVE_SHIFT -> posX++
+                                    WRAP_NEGATIVE_SHIFT -> posX--
+                                }
+                            }
+                        }
+                    }
                 }
             }
-
         }
     }
 
@@ -425,6 +467,15 @@ class KTerminalData(width: Int,
     }
 
     companion object {
+        const val WRITE_LEFT_TO_RIGHT = 0
+        const val WRITE_TOP_TO_BOTTOM = 1
+        const val WRITE_RIGHT_TO_LEFT = 2
+        const val WRITE_BOTTOM_TO_TOP = 3
+
+        const val WRAP_NO_SHIFT = 0
+        const val WRAP_POSITIVE_SHIFT = 1
+        const val WRAP_NEGATIVE_SHIFT = 2
+
         const val NULL = 0
         const val SMILE = 1
         const val INVERTED_SMILE = 2

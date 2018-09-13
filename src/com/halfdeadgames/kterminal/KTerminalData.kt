@@ -203,7 +203,7 @@ class KTerminalData(width: Int,
         write(char.toInt())
     }
 
-    @JvmOverloads fun write(string: String, rotation: Int = WRITE_LEFT_TO_RIGHT, wrapping: Int = WRAP_NONE) {
+    @JvmOverloads fun write(string: String, direction: Int = WRITE_LEFT_TO_RIGHT, wrapping: Int = WRAP_NONE) {
         var posX = cursor.x
         var posY = cursor.y
         var isWriting = true
@@ -213,18 +213,18 @@ class KTerminalData(width: Int,
                 workingCursor.set(posX, posY)
                 write(it)
 
-                when(rotation) {
+                when(direction) {
                     WRITE_LEFT_TO_RIGHT -> posX++
                     WRITE_TOP_TO_BOTTOM -> posY++
                     WRITE_RIGHT_TO_LEFT -> posX--
                     WRITE_BOTTOM_TO_TOP -> posY--
                 }
 
-                when(rotation) {
+                when(direction) {
                     WRITE_LEFT_TO_RIGHT, WRITE_RIGHT_TO_LEFT -> {
                         if(posX >= width) {
                             posX = 0
-                            
+
                             when(wrapping) {
                                 WRAP_NONE -> isWriting = false
                                 WRAP_POSITIVE_SHIFT -> posY++
@@ -232,7 +232,7 @@ class KTerminalData(width: Int,
                             }
                         } else if(posX < 0) {
                             posX = width - 1
-                            
+
                             when(wrapping) {
                                 WRAP_NONE -> isWriting = false
                                 WRAP_POSITIVE_SHIFT -> posY++
@@ -243,7 +243,7 @@ class KTerminalData(width: Int,
                     WRITE_TOP_TO_BOTTOM, WRITE_BOTTOM_TO_TOP -> {
                         if(posY >= height) {
                             posY = 0
-                            
+
                             when(wrapping) {
                                 WRAP_NONE -> isWriting = false
                                 WRAP_POSITIVE_SHIFT -> posX++
@@ -251,7 +251,7 @@ class KTerminalData(width: Int,
                             }
                         } else if(posY < 0) {
                             posY = height - 1
-                            
+
                             when(wrapping) {
                                 WRAP_NONE -> isWriting = false
                                 WRAP_POSITIVE_SHIFT -> posX++

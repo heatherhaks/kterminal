@@ -93,24 +93,26 @@ class KTerminalData(width: Int,
         }
     }
 
-    val cursor: Cursor = Cursor(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
-    val workingCursor: Cursor = Cursor(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
+    private val cursor: Cursor = Cursor(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
+    private val workingCursor: Cursor = Cursor(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
 
     @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Float = defaultForegroundColor, backgroundColor: Float = defaultBackgroundColor, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         cursor.set(x, y, foregroundColor, backgroundColor, rotation, scale,  isFlippedX, isFlippedY)
+        workingCursor.set(cursor)
     }
 
     @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Color, backgroundColor: Color, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
-        cursor.set(x, y, foregroundColor.toFloatBits(), backgroundColor.toFloatBits(), rotation, scale,  isFlippedX, isFlippedY)
+        setCursor(x, y, foregroundColor.toFloatBits(), backgroundColor.toFloatBits(), rotation, scale, isFlippedX, isFlippedY)
     }
-    
+
     fun resetCursor() {
-        cursor.set(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
+        setCursor(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
     }
-    
+
     fun setCursorPosition(x: Int, y: Int) : KTerminalData {
         cursor.x = x
         cursor.y = y
+        workingCursor.set(cursor)
 
         return this
     }
@@ -119,6 +121,8 @@ class KTerminalData(width: Int,
         cursor.foregroundColor = foregroundColor
         cursor.backgroundColor = backgroundColor
 
+        workingCursor.foregroundColor = foregroundColor
+        workingCursor.backgroundColor = backgroundColor
         return this
     }
 
@@ -128,12 +132,14 @@ class KTerminalData(width: Int,
 
     fun setCursorScale(scale: Float) : KTerminalData {
         cursor.scale = scale
+        workingCursor.scale = scale
 
         return this
     }
 
     fun setCursorRotation(rotation: Float) : KTerminalData {
         cursor.rotation = rotation
+        workingCursor.rotation = rotation
 
         return this
     }
@@ -141,6 +147,8 @@ class KTerminalData(width: Int,
     fun setCursorFlip(isFlippedX: Boolean, isFlippedY: Boolean) : KTerminalData {
         cursor.isFlippedX = isFlippedX
         cursor.isFlippedY = isFlippedY
+        workingCursor.isFlippedX = isFlippedX
+        workingCursor.isFlippedY = isFlippedY
 
         return this
     }
@@ -165,14 +173,8 @@ class KTerminalData(width: Int,
         return setCursorFlip(isFlippedX, isFlippedY)
     }
 
-    //override any color data given by the cursor
-    @JvmOverloads fun write(glyph: KTerminalGlyph, cursor: Cursor? = null) {
-        if(cursor == null) {
-            workingCursor.set(this.cursor)
-        } else {
-            workingCursor.set(cursor)
-        }
-
+    //override any cursor data given by the glyph
+    fun write(glyph: KTerminalGlyph) {
         workingCursor.foregroundColor = glyph.foregroundColor
         workingCursor.backgroundColor = glyph.backgroundColor
         workingCursor.rotation = glyph.rotation
@@ -180,16 +182,10 @@ class KTerminalData(width: Int,
         workingCursor.isFlippedX = glyph.isFlippedX
         workingCursor.isFlippedY = glyph.isFlippedY
 
-        write(glyph.value, workingCursor)
+        write(glyph.value)
     }
 
-    @JvmOverloads fun write(value: Int, cursor:Cursor? = null) {
-        if(cursor == null) {
-            workingCursor.set(this.cursor)
-        } else {
-            workingCursor.set(cursor)
-        }
-
+    fun write(value: Int) {
         terminal[workingCursor.x][workingCursor.y].apply {
             this.value = value
             this.foregroundColor = workingCursor.foregroundColor
@@ -199,64 +195,50 @@ class KTerminalData(width: Int,
             this.isFlippedX = workingCursor.isFlippedX
             this.isFlippedY = workingCursor.isFlippedY
         }
+
+        workingCursor.set(cursor)
     }
 
-    @JvmOverloads fun write(char: Char, cursor: Cursor? = null) {
-        write(char.toInt(), cursor)
+    fun write(char: Char) {
+        write(char.toInt())
     }
 
-    @JvmOverloads fun write(string: String, cursor: Cursor? = null) {
-        if(cursor == null) {
-            workingCursor.set(this.cursor)
-        } else {
-            workingCursor.set(cursor)
-        }
-
+    fun write(string: String) {
+        var posX = cursor.x
+        var posY = cursor.y
         string.toCharArray().forEach {
-            write(it, workingCursor)
-            if(workingCursor.x == width - 1) workingCursor.y++
-            workingCursor.x++
+            workingCursor.set(posX, posY)
+            write(it)
+            if(posX == width - 1) posY++
+            posX++
         }
     }
 
-    @JvmOverloads fun clear(width: Int = 1, height: Int = 1, cursor: Cursor? = null) {
-        if(cursor == null) {
-            workingCursor.set(this.cursor)
-        } else {
-            workingCursor.set(cursor)
-        }
-
+    @JvmOverloads fun clear(width: Int = 1, height: Int = 1) {
         workingCursor.foregroundColor = defaultForegroundColor
         workingCursor.backgroundColor = defaultBackgroundColor
         workingCursor.rotation = 0f
         workingCursor.scale = 1f
 
-        drawRect(width, height, 0, true, workingCursor)
+        drawRect(width, height, 0, true)
     }
 
     fun clearAll() {
         workingCursor.set(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
-        clear(width, height, workingCursor)
+        clear(width, height)
     }
 
     @JvmOverloads fun drawRect(width: Int,
                                height: Int,
                                char: Char = ' ',
-                               isFilled: Boolean = true,
-                               cursor: Cursor? = null) {
-        drawRect(width, height, char.toInt(), isFilled, cursor)
+                               isFilled: Boolean = true) {
+        drawRect(width, height, char.toInt(), isFilled)
     }
 
     @JvmOverloads fun drawRect(width: Int,
                  height: Int,
                  value: Int,
-                 isFilled: Boolean = true,
-                 cursor: Cursor? = null) {
-        if(cursor == null) {
-            workingCursor.set(this.cursor)
-        } else {
-            workingCursor.set(cursor)
-        }
+                 isFilled: Boolean = true) {
 
         val startX = workingCursor.x
         val startY = workingCursor.y
@@ -266,28 +248,22 @@ class KTerminalData(width: Int,
                 workingCursor.x = i
                 workingCursor.y = j
                 if(isFilled) {
-                    write(value, workingCursor)
+                    write(value)
                 } else {
                     if(i == startX || i == startX + width - 1) {
-                        write(value, workingCursor)
+                        write(value)
                     } else if(j == startY || j == startY + height - 1) {
-                        write(value, workingCursor)
+                        write(value)
                     }
                 }
             }
         }
     }
 
-    @JvmOverloads fun drawLine(endX: Int, endY: Int, char: Char, cursor: Cursor? = null) {
-        drawLine(endX, endY, char.toInt(), cursor)
+    fun drawLine(endX: Int, endY: Int, char: Char) {
+        drawLine(endX, endY, char.toInt())
     }
-    @JvmOverloads fun drawLine(endX: Int, endY: Int, value: Int, cursor: Cursor? = null) {
-        if(cursor == null) {
-            workingCursor.set(this.cursor)
-        } else {
-            workingCursor.set(cursor)
-        }
-
+    fun drawLine(endX: Int, endY: Int, value: Int) {
         fun plotLine(x0: Int, y0: Int, x1: Int, y1: Int) :  List<Pair<Int, Int>> {
             val output: MutableList<Pair<Int, Int>> = mutableListOf(Pair(x0, y0), Pair(x1, y1))
 
@@ -357,7 +333,7 @@ class KTerminalData(width: Int,
         linePlot.forEach{
             workingCursor.x = it.first
             workingCursor.y = it.second
-            write(value, workingCursor)
+            write(value)
         }
     }
 
@@ -371,47 +347,45 @@ class KTerminalData(width: Int,
         val startY = workingCursor.y
 
         workingCursor.set(startX + 1, startY)
-        drawLine(startX + width - 2, startY, horizontal, workingCursor)
+        drawLine(startX + width - 2, startY, horizontal)
         workingCursor.set(startX + 1, startY + height - 1)
-        drawLine(startX + width - 2, startY + height - 1, horizontal, workingCursor)
+        drawLine(startX + width - 2, startY + height - 1, horizontal)
         workingCursor.set(startX, startY + 1)
-        drawLine(startX, startY + height -2 , vertical, workingCursor)
+        drawLine(startX, startY + height -2 , vertical)
         workingCursor.set(startX + width - 1, startY + 1)
-        drawLine(startX + width - 1, startY + height - 2 , vertical, workingCursor)
+        drawLine(startX + width - 1, startY + height - 2 , vertical)
         workingCursor.set(startX, startY)
-        write(topLeft, workingCursor)
+        write(topLeft)
         workingCursor.set(startX + width - 1, startY)
-        write(topRight, workingCursor)
+        write(topRight)
         workingCursor.set(startX, startY + height -1)
-        write(bottomLeft, workingCursor)
+        write(bottomLeft)
         workingCursor.set(startX + width - 1, startY + height - 1)
-        write(bottomRight, workingCursor)
+        write(bottomRight)
     }
 
-    @JvmOverloads fun drawBox(width: Int, height: Int, topLeft: Char, topRight: Char, bottomLeft: Char, bottomRight: Char, horizontal: Char, vertical: Char, cursor: Cursor? = null) {
-        drawBox(width, height, topLeft.toInt(), topRight.toInt(), bottomLeft.toInt(), bottomRight.toInt(), horizontal.toInt(), vertical.toInt(), cursor)
+    fun drawBox(width: Int, height: Int, topLeft: Char, topRight: Char, bottomLeft: Char, bottomRight: Char, horizontal: Char, vertical: Char) {
+        drawBox(width, height, topLeft.toInt(), topRight.toInt(), bottomLeft.toInt(), bottomRight.toInt(), horizontal.toInt(), vertical.toInt())
     }
 
-    @JvmOverloads fun drawDoubleBox(width: Int, height: Int, cursor: Cursor? = null) {
+    fun drawDoubleBox(width: Int, height: Int) {
         drawBox(width, height,
                 KTerminalData.BOX_DOUBLE_DOWN_RIGHT,
                 KTerminalData.BOX_DOUBLE_DOWN_LEFT,
                 KTerminalData.BOX_DOUBLE_UP_RIGHT,
                 KTerminalData.BOX_DOUBLE_UP_LEFT,
                 KTerminalData.BOX_DOUBLE_HORIZONTAL,
-                KTerminalData.BOX_DOUBLE_VERTICAL,
-                cursor)
+                KTerminalData.BOX_DOUBLE_VERTICAL)
     }
 
-    @JvmOverloads fun drawSingleBox(width: Int, height: Int, cursor: Cursor? = null) {
+    fun drawSingleBox(width: Int, height: Int) {
         drawBox(width, height,
                 KTerminalData.BOX_SINGLE_DOWN_RIGHT,
                 KTerminalData.BOX_SINGLE_DOWN_LEFT,
                 KTerminalData.BOX_SINGLE_UP_RIGHT,
                 KTerminalData.BOX_SINGLE_UP_LEFT,
                 KTerminalData.BOX_SINGLE_HORIZONTAL,
-                KTerminalData.BOX_SINGLE_VERTICAL,
-                cursor)
+                KTerminalData.BOX_SINGLE_VERTICAL)
     }
 
     override fun toString(): String {

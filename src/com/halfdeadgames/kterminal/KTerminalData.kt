@@ -1,6 +1,7 @@
 package com.halfdeadgames.kterminal
 
 import com.badlogic.gdx.graphics.Color
+import kotlin.math.abs
 
 class KTerminalData(width: Int,
                     height: Int,
@@ -310,74 +311,74 @@ class KTerminalData(width: Int,
         }
     }
 
+    private fun plotLine(x0: Int, y0: Int, x1: Int, y1: Int) :  List<Pair<Int, Int>> {
+        val output: MutableList<Pair<Int, Int>> = mutableListOf(Pair(x0, y0), Pair(x1, y1))
+
+        fun plotLineLow(x0: Int, y0: Int, x1: Int, y1: Int){
+            val dx = x1 - x0
+            var dy = y1 - y0
+            var yi = 1
+
+            if(dy < 0) {
+                yi = -1
+                dy = -dy
+            }
+            var d = 2*dy - dx
+            var y = y0
+
+            for(x in x0 until x1) {
+                output.add(Pair(x, y))
+                if(d > 0) {
+                    y += yi
+                    d -= 2*dx
+                }
+                d += 2*dy
+            }
+        }
+
+        fun plotLineHigh(x0: Int, y0: Int, x1: Int, y1: Int) {
+            var dx = x1 - x0
+            val dy = y1 - y0
+            var xi = 1
+
+            if(dx < 0) {
+                xi = -1
+                dx = -dx
+            }
+            var d = 2*dx - dy
+            var x = x0
+
+            for(y in y0 until y1) {
+                output.add(Pair(x, y))
+                if(d > 0) {
+                    x += xi
+                    d -= 2*dy
+                }
+                d += 2*dx
+            }
+        }
+
+        if(Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
+            if (x0 > x1) {
+                plotLineLow(x1, y1, x0, y0)
+            } else {
+                plotLineLow(x0, y0, x1, y1)
+            }
+        } else {
+            if(y0 > y1) {
+                plotLineHigh(x1, y1, x0, y0)
+            } else {
+                plotLineHigh(x0, y0, x1, y1)
+            }
+        }
+
+        return output.toList()
+    }
+
     fun drawLine(endX: Int, endY: Int, char: Char) {
         drawLine(endX, endY, char.toInt())
     }
     fun drawLine(endX: Int, endY: Int, value: Int) {
-        fun plotLine(x0: Int, y0: Int, x1: Int, y1: Int) :  List<Pair<Int, Int>> {
-            val output: MutableList<Pair<Int, Int>> = mutableListOf(Pair(x0, y0), Pair(x1, y1))
-
-            fun plotLineLow(x0: Int, y0: Int, x1: Int, y1: Int){
-                val dx = x1 - x0
-                var dy = y1 - y0
-                var yi = 1
-
-                if(dy < 0) {
-                    yi = -1
-                    dy = -dy
-                }
-                var d = 2*dy - dx
-                var y = y0
-
-                for(x in x0 until x1) {
-                    output.add(Pair(x, y))
-                    if(d > 0) {
-                        y += yi
-                        d -= 2*dx
-                    }
-                    d += 2*dy
-                }
-            }
-
-            fun plotLineHigh(x0: Int, y0: Int, x1: Int, y1: Int) {
-                var dx = x1 - x0
-                val dy = y1 - y0
-                var xi = 1
-
-                if(dx < 0) {
-                    xi = -1
-                    dx = -dx
-                }
-                var d = 2*dx - dy
-                var x = x0
-
-                for(y in y0 until y1) {
-                    output.add(Pair(x, y))
-                    if(d > 0) {
-                        x += xi
-                        d -= 2*dy
-                    }
-                    d += 2*dx
-                }
-            }
-
-            if(Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
-                if (x0 > x1) {
-                    plotLineLow(x1, y1, x0, y0)
-                } else {
-                    plotLineLow(x0, y0, x1, y1)
-                }
-            } else {
-                if(y0 > y1) {
-                    plotLineHigh(x1, y1, x0, y0)
-                } else {
-                    plotLineHigh(x0, y0, x1, y1)
-                }
-            }
-
-            return output.toList()
-        }
-
         val linePlot = plotLine(workingCursor.x, workingCursor.y, endX, endY).toList()
 
         linePlot.forEach{
@@ -387,12 +388,119 @@ class KTerminalData(width: Int,
         }
     }
 
-    @JvmOverloads fun drawBox(width: Int, height: Int, topLeft: Int, topRight: Int, bottomLeft: Int, bottomRight: Int, horizontal: Int, vertical: Int, cursor: Cursor? = null) {
-        if(cursor == null) {
-            workingCursor.set(this.cursor)
-        } else {
-            workingCursor.set(cursor)
+    private fun plotEllipseRect(x0: Int, y0: Int, x1: Int, y1: Int) :  List<Pair<Int, Int>> {
+        val output: MutableList<Pair<Int, Int>> = mutableListOf()
+
+        var x0 = x0
+        var y0 = y0
+        var x1 = x1
+        var y1 = y1
+        var a = abs(x1 - x0)
+        val b = abs(y1 - y0)
+        var b1 = b and 1 /* values of diameter */
+        var dx = (4 * (1 - a) * b * b).toLong()
+        var dy = (4 * (b1 + 1) * a * a).toLong() /* error increment */
+        var err = dx + dy + (b1 * a * a).toLong()
+        var e2: Long /* error of 1.step */
+
+        if (x0 > x1) {
+            x0 = x1
+            x1 += a
+        } /* if called with swapped points */
+        if (y0 > y1) y0 = y1 /* .. exchange them */
+        y0 += (b + 1) / 2
+        y1 = y0 - b1   /* starting pixel */
+        a *= 8 * a
+        b1 = 8 * b * b
+
+        do {
+            output.add(Pair(x1, y0)) /*   I. Quadrant */
+            output.add(Pair(x0, y0)) /*  II. Quadrant */
+            output.add(Pair(x0, y1)) /* III. Quadrant */
+            output.add(Pair(x1, y1)) /*  IV. Quadrant */
+            e2 = 2 * err
+            if (e2 <= dy) {
+                y0++
+                y1--
+                dy += a.toLong()
+                err += dy
+            }  /* y step */
+            if (e2 >= dx || 2 * err > dy) {
+                x0++
+                x1--
+                dx += b1.toLong()
+                err += dx
+            } /* x step */
+        } while (x0 <= x1)
+
+        while (y0 - y1 < b) {  /* too early stop of flat ellipses a=1 */
+            output.add(Pair(x0 - 1, y0)) /* -> finish tip of ellipse */
+            output.add(Pair(x1 + 1, y0++))
+            output.add(Pair(x0 - 1, y1))
+            output.add(Pair(x1 + 1, y1--))
         }
+
+        return output
+    }
+
+    fun drawEllipse(width: Int, height: Int, char: Char) {
+        drawEllipse(width, height, char.toInt())
+    }
+
+    fun drawEllipse(width: Int, height: Int, value: Int) {
+        val ellipsePlot = plotEllipseRect(cursor.x - 1, cursor.y - 1, cursor.x + width - 2, cursor.y + height - 2)
+
+        ellipsePlot.toList().forEach{
+            workingCursor.x = it.first
+            workingCursor.y = it.second
+            write(value)
+        }
+    }
+
+    private fun distance2(x0: Int, y0: Int, x1: Int, y1: Int) : Int {
+        return ((x1 -x0) * (x1 -x0)) + ((y1 - y0) * (y1 - y0))
+    }
+
+    private fun distance(x0: Int, y0: Int, x1: Int, y1: Int) : Int {
+        return Math.sqrt(distance2(x0, y0, x1, y1).toDouble()).toInt()
+    }
+
+    private fun plotCircle(centerX: Int, centerY: Int, radius: Int) : List<Pair<Int, Int>> {
+        val output: MutableList<Pair<Int, Int>> = mutableListOf()
+
+        var r = radius
+        var x = -r
+        var y = 0
+        var err = 2 - (2 * r)
+
+        do {
+            output.add(Pair(centerX - x, centerY + y))
+            output.add(Pair(centerX -y, centerY - x))
+            output.add(Pair(centerX + x, centerY - y))
+            output.add(Pair(centerX + y, centerY + x))
+            r = err
+            if(r <= y) err += ++y * 2 + 1
+            if(r > x || err > y) err += ++x * 2 + 1
+        } while(x < 0)
+
+        return output.toList()
+    }
+
+    fun drawCircle(radius: Int, char: Char) {
+        drawCircle(radius, char.toInt())
+    }
+
+    fun drawCircle(radius: Int, value: Int) {
+        val circlePlot = plotCircle(cursor.x - 1, cursor.y - 1, radius - 1)
+
+        circlePlot.toList().forEach{
+            workingCursor.x = it.first
+            workingCursor.y = it.second
+            write(value)
+        }
+    }
+
+    fun drawBox(width: Int, height: Int, topLeft: Int, topRight: Int, bottomLeft: Int, bottomRight: Int, horizontal: Int, vertical: Int) {
         val startX = workingCursor.x
         val startY = workingCursor.y
 

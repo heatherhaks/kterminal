@@ -46,6 +46,6 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
     }
 
     fun copy() : KTerminalGlyph {
-        return KTerminalGlyph(char,  foreground.cpy(), background.cpy(), rotation, scale, isFlippedX, isFlippedY)
+        return KTerminalGlyph(value,  foreground.cpy(), background.cpy(), rotation, scale, isFlippedX, isFlippedY)
     }
 }

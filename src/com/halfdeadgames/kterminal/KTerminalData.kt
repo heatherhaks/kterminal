@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color
 
 class KTerminalData(width: Int,
                     height: Int,
-                    var defaultForeground: Color = Color.WHITE.cpy(),
-                    var defaultBackground: Color = Color.BLACK.cpy()
+                    var defaultForegroundColor: Float = Color.WHITE.toFloatBits(),
+                    var defaultBackgroundColor: Float = Color.BLACK.toFloatBits()
 ) {
     var width: Int = width
         set(value) {
@@ -24,25 +24,25 @@ class KTerminalData(width: Int,
             }
         }
 
-    var terminal = Array(width, {
-        Array(height, {
-            KTerminalGlyph(' ', defaultForeground, defaultBackground)
-        })
-    })
+    var terminal = Array(width) {
+        Array(height) {
+            KTerminalGlyph(' ', defaultForegroundColor, defaultBackgroundColor)
+        }
+    }
 
     //will not preserve terminal data
     fun resize(width: Int, height: Int) {
         this.width = width
         this.height = height
 
-        terminal = Array(width, {
-            Array(height, {
-                KTerminalGlyph(' ', defaultForeground, defaultBackground)
-            })
-        })
+        terminal = Array(width) {
+            Array(height) {
+                KTerminalGlyph(' ', defaultForegroundColor, defaultBackgroundColor)
+            }
+        }
     }
 
-    inner class Cursor(x: Int, y: Int, var foregroundColor: Color, var backgroundColor: Color, var rotation: Float, var scale: Float, var isFlippedX: Boolean, var isFlippedY: Boolean) {
+    inner class Cursor(x: Int, y: Int, var foregroundColor: Float, var backgroundColor: Float, var rotation: Float, var scale: Float, var isFlippedX: Boolean, var isFlippedY: Boolean) {
         var x: Int = x
             set(value) {
                 var tempValue = value
@@ -72,11 +72,11 @@ class KTerminalData(width: Int,
                 field = tempValue
             }
 
-        fun set(x: Int, y: Int, foregroundColor: Color, backgroundColor: Color, rotation: Float, scale: Float, isFlippedX: Boolean, isFlippedY: Boolean) {
+        fun set(x: Int, y: Int, foregroundColor: Float, backgroundColor: Float, rotation: Float, scale: Float, isFlippedX: Boolean, isFlippedY: Boolean) {
             this.x = x
             this.y = y
-            this.foregroundColor = foregroundColor.cpy()
-            this.backgroundColor = backgroundColor.cpy()
+            this.foregroundColor = foregroundColor
+            this.backgroundColor = backgroundColor
             this.rotation = rotation
             this.scale = scale
             this.isFlippedX = isFlippedX
@@ -90,14 +90,14 @@ class KTerminalData(width: Int,
             set(cursor.x, cursor.y, cursor.foregroundColor, cursor.backgroundColor, cursor.rotation, cursor.scale, cursor.isFlippedX, cursor.isFlippedY)
         }
     }
-    val cursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f, 1f, false, false)
-    val workingCursor: Cursor = Cursor(0, 0, defaultForeground, defaultBackground, 0f, 1f, false, false)
+    val cursor: Cursor = Cursor(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
+    val workingCursor: Cursor = Cursor(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
 
-    @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Color = defaultForeground, backgroundColor: Color = defaultBackground, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
+    @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Float = defaultForegroundColor, backgroundColor: Float = defaultBackgroundColor, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         cursor.set(x, y, foregroundColor, backgroundColor, rotation, scale,  isFlippedX, isFlippedY)
     }
     fun resetCursor() {
-        cursor.set(0, 0, defaultForeground, defaultBackground, 0f, 1f, false, false)
+        cursor.set(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
     }
 
     operator fun get(x: Int, y: Int) : KTerminalData {
@@ -105,20 +105,20 @@ class KTerminalData(width: Int,
         cursor.y = y
         return this
     }
-    operator fun get(foregroundColor: Color, backgroundColor: Color) : KTerminalData {
+    operator fun get(foregroundColor: Float, backgroundColor: Float) : KTerminalData {
         cursor.foregroundColor = foregroundColor
         cursor.backgroundColor = backgroundColor
         return this
     }
-    operator fun get(foregroundColor: Color) : KTerminalData {
+    operator fun get(foregroundColor: Float) : KTerminalData {
         cursor.foregroundColor = foregroundColor
         return this
     }
-    operator fun get(rotation: Float, scale: Float) : KTerminalData {
-        cursor.rotation = rotation
-        cursor.scale = scale
-        return this
-    }
+//    operator fun get(rotation: Float, scale: Float) : KTerminalData {
+//        cursor.rotation = rotation
+//        cursor.scale = scale
+//        return this
+//    }
     operator fun get(isFlippedX: Boolean, isFlippedY: Boolean) : KTerminalData {
         cursor.isFlippedX = isFlippedX
         cursor.isFlippedY = isFlippedY
@@ -133,8 +133,8 @@ class KTerminalData(width: Int,
             workingCursor.set(cursor)
         }
 
-        workingCursor.foregroundColor = glyph.foreground
-        workingCursor.backgroundColor = glyph.background
+        workingCursor.foregroundColor = glyph.foregroundColor
+        workingCursor.backgroundColor = glyph.backgroundColor
         workingCursor.rotation = glyph.rotation
         workingCursor.scale = glyph.scale
         workingCursor.isFlippedX = glyph.isFlippedX
@@ -152,8 +152,8 @@ class KTerminalData(width: Int,
 
         terminal[workingCursor.x][workingCursor.y].apply {
             this.value = value
-            this.foreground = workingCursor.foregroundColor
-            this.background = workingCursor.backgroundColor
+            this.foregroundColor = workingCursor.foregroundColor
+            this.backgroundColor = workingCursor.backgroundColor
             this.rotation = workingCursor.rotation
             this.scale = workingCursor.scale
             this.isFlippedX = workingCursor.isFlippedX
@@ -186,8 +186,8 @@ class KTerminalData(width: Int,
             workingCursor.set(cursor)
         }
 
-        workingCursor.foregroundColor = defaultForeground
-        workingCursor.backgroundColor = defaultBackground
+        workingCursor.foregroundColor = defaultForegroundColor
+        workingCursor.backgroundColor = defaultBackgroundColor
         workingCursor.rotation = 0f
         workingCursor.scale = 1f
 
@@ -195,7 +195,7 @@ class KTerminalData(width: Int,
     }
 
     fun clearAll() {
-        workingCursor.set(0, 0, defaultForeground, defaultBackground, 0f, 1f, false, false)
+        workingCursor.set(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, false, false)
         clear(width, height, workingCursor)
     }
 
@@ -375,8 +375,8 @@ class KTerminalData(width: Int,
     }
 
     override fun toString(): String {
-        var output = "[width=$width,height=$height,defaultForeground=$defaultForeground," +
-            "defaultBackground=$defaultBackground,cursor={x=${cursor.x},y=${cursor.y}," +
+        var output = "[width=$width,height=$height,defaultForegroundColor=$defaultForegroundColor," +
+            "defaultBackgroundColor=$defaultBackgroundColor,cursor={x=${cursor.x},y=${cursor.y}," +
             "foreground=${cursor.foregroundColor},background=${cursor.backgroundColor}},terminal={\n"
 
         for(j in 0 until height) {

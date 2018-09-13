@@ -3,20 +3,36 @@ package com.halfdeadgames.kterminal
 import com.badlogic.gdx.graphics.Color
 
 data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
-                          var foreground: Color,
-                          var background: Color,
+                          var foregroundColor: Float,
+                          var backgroundColor: Float,
                           var rotation: Float = 0f,
                           var scale: Float = 1f,
                           var isFlippedX: Boolean = false,
                           var isFlippedY: Boolean = false) {
 
-    @JvmOverloads constructor(char: Char,
-                              foreground: Color,
-                              background: Color,
+    @JvmOverloads constructor(value: Int,
+                              foregroundColor: Color,
+                              backgroundColor: Color,
                               rotation: Float = 0f,
                               scale: Float = 1f,
                               isFlippedX: Boolean = false,
-                              isFlippedY: Boolean = false) : this(char.toInt(), foreground, background, rotation, scale, isFlippedX, isFlippedY)
+                              isFlippedY: Boolean = false) : this(value, foregroundColor.toFloatBits(), backgroundColor.toFloatBits(), rotation, scale, isFlippedX, isFlippedY)
+
+    @JvmOverloads constructor(char: Char,
+                              foregroundColor: Color,
+                              backgroundColor: Color,
+                              rotation: Float = 0f,
+                              scale: Float = 1f,
+                              isFlippedX: Boolean = false,
+                              isFlippedY: Boolean = false) : this(char.toInt(), foregroundColor.toFloatBits(), backgroundColor.toFloatBits(), rotation, scale, isFlippedX, isFlippedY)
+
+    @JvmOverloads constructor(char: Char,
+                              foregroundColor: Float,
+                              backgroundColor: Float,
+                              rotation: Float = 0f,
+                              scale: Float = 1f,
+                              isFlippedX: Boolean = false,
+                              isFlippedY: Boolean = false) : this(char.toInt(), foregroundColor, backgroundColor, rotation, scale, isFlippedX, isFlippedY)
 
 
     var char: Char
@@ -27,25 +43,33 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
             return value.toChar()
         }
 
-    @JvmOverloads fun set(value: Int, foregroundColor: Color, backgroundColor: Color, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
+    @JvmOverloads fun set(value: Int, foregroundColor: Float, backgroundColor: Float, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         this.value = value
-        this.foreground = foregroundColor.cpy()
-        this.background = backgroundColor.cpy()
+        this.foregroundColor = foregroundColor
+        this.backgroundColor = backgroundColor
         this.rotation = rotation
         this.scale = scale
         this.isFlippedX = isFlippedX
         this.isFlippedY = isFlippedY
     }
 
+    @JvmOverloads fun set(value: Int, foregroundColor: Color, backgroundColor: Color, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
+        set(value, foregroundColor.toFloatBits(), backgroundColor.toFloatBits(), rotation, scale, isFlippedX, isFlippedY)
+    }
+
     @JvmOverloads fun set(char: Char, foregroundColor: Color, backgroundColor: Color, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
+        set(char.toInt(), foregroundColor.toFloatBits(), backgroundColor.toFloatBits(), rotation, scale, isFlippedX, isFlippedY)
+    }
+
+    @JvmOverloads fun set(char: Char, foregroundColor: Float, backgroundColor: Float, rotation: Float = 0f, scale: Float = 1f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         set(char.toInt(), foregroundColor, backgroundColor, rotation, scale, isFlippedX, isFlippedY)
     }
 
     fun set(glyph: KTerminalGlyph) {
-        set(glyph.char, glyph.foreground, glyph.background, glyph.rotation, glyph.scale, glyph.isFlippedX, glyph.isFlippedY)
+        set(glyph.char, glyph.foregroundColor, glyph.backgroundColor, glyph.rotation, glyph.scale, glyph.isFlippedX, glyph.isFlippedY)
     }
 
     fun copy() : KTerminalGlyph {
-        return KTerminalGlyph(value,  foreground.cpy(), background.cpy(), rotation, scale, isFlippedX, isFlippedY)
+        return KTerminalGlyph(value, foregroundColor, backgroundColor, rotation, scale, isFlippedX, isFlippedY)
     }
 }

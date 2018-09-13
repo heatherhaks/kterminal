@@ -172,6 +172,7 @@ kTerminalData.write("Example", direction = KTerminalData.WRITE_RIGHT_TO_LEFT, wr
 
 There are several shape drawing options:
 
+```
 kTerminalData.drawRect(
         width = 3
         height = 4,

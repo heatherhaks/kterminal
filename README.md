@@ -103,99 +103,75 @@ kTerminalRenderer.set(tilesetFile = "otherFontSheet.png", scale = 1f)
 kTerminalData.resize(width = 80, height = 60)
 ```
 
-### Writing - Bracket Syntax
+### Changing Cursor Data
 
-KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input cursor information in brackets like in the following examples, but doing so is optional. There are also several functions for shape drawing.
+Cursor data can be set with brackets or direct function calls while using it from Kotlin code, or from direct functions only if using it from Java code. Brackets and direct function calls can be done back to back, such as:
 
-```     
-//setting cursor info
-kTerminalData[x, y][Color.GREEN, Color(0f, 0f, 1f, 0.5f)]
-//using the current settings of the internal cursor:
-kTerminalData.write("Example string.")
+```
+kTerminalData[x, y][foreground, background]
+kTerminalData.setCursorPosition(x, y).setCursorColor(foreground, background)
+```
+The following options can be set:
 
-//possible cursor settings, can be called in any order right after eachother
-        //position
-        kTerminalData[x, y]
-        //color
-        kTerminalData[foreground, background]
-        //rotation/scaling
-        kTerminalData[rotationInDegrees, scale]
-        //flipping
-        kTerminalData[isFlippedX, isFlippedY]
-
-//setting the position/color while writing
-kTerminalData[x, y].write(2) // writing with an Int
-kTerminalData[x, y].write(exampleGlyph) // writing with a KTerminalGlyph
-kTerminalData[x, y][foregroundColor, backgroundColor].write('#') // writing with a Char
-
-//writing a string, string writing supports rotation
-    //0 == left to right, this is the default
-    //1 == top to bottom
-    //2 == right to left
-    //3 == bottom to top
-
-kTerminalData.write("Test") // will go from cursor position left to right
-kTerminalData.write("Test", 1) // will go from cursor position top to bottom
-
-//shape drawing
-kTerminalData[x, y][foregroundColor, backgroundColor].drawRect(
-        width = 3
-        height = 4,
-        char = ' '
-        isFilled = true) // whether it's filled or just the outline
-        
-//doesn't have to be a straight line
-kTerminalData[x, y].drawLine(endX, endY, '#')
-
-//a hollow rect where you can specify different characters for each corner and horizontal and vertical sides
-kTerminalData.drawBox(
-        width = 5,
-        height = 10,
-        topLeft = '*',
-        topRight = '*',
-        bottomLeft = '*',
-        bottomRight = '*',
-        horizontal = '-',
-        vertical = '|')
+```
+   //position
+   kTerminalData[x, y]
+   kTerminal.setCursorPosition(x, y)
+   
+   //color
+   kTerminalData[foreground, background] // libGdx Color objects
+   kTerminalData.setCursorColor(foreground, background) // libGdx Color objects
+   kTerminalData.setCursorColor(foreground, background) // float bits in AGBR format 
+                                                         // (you can get this from a libgdx Color object using toFloatBits())
+   //glyph rotation and scale
+   kTerminalData[rotation, scale]
+   kTerminalData.setCursorRotation(rotation)
+   kTerminalData.setCursorScale(scale)
+   
+   //glyph flipping
+   kTerminalData[isFlippedX, isFlippedY]
+   kTerminalData.setCursorFlip(isFlippedX, isFlippedY)
+   
+   //resetting the cursor
+   kTerminalData.resetCursor()
 ```
 
-### Writing - Normal Syntax
+### Writing
 
-KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input cursor information in functions right after eachother like in the following examples, but doing so is optional. There are also several functions for shape drawing. This is the method you will need to use if you use KTerminal in Java.
+If one does not change the cursor data before writing, the previous or default settings will be used. One can change a setting and write in the same line.
 
-```     
-//setting cursor info
-kTerminalData.setCursorPosition(x, y).setCursorColor(Color.GREEN, Color(0f, 0f, 1f, 0.5f))
-//using the current settings of the internal cursor:
-kTerminalData.write("Example string.")
+```
+//writing a char and changing cursor data at the same time
+//this requires an IBM Code Sheet 437 format glyph sheet as shown in the example ones given at the top of this readme
+kTerminalData.setCursorPosition(x, y).setCursorColor(foreground, background).write('@')
 
-//possible cursor settings, can be called in any order right after eachother
-        //position
-        kTerminalData.setCursorPosition(x, y)
-        //color
-        kTerminalData.setCursorColor(foreground, background) // accepts LibGDX Colors or ABGR float bits
-        //rotation
-        kTerminalData.setCursorRotation(rotationInDegrees)
-        //scaling
-        kTerminalData.setCursorScale(scale)
-        //flipping
-        kTerminalData.setCursorFlip(isFlippedX, isFlippedY)
+//writing a specific glyph using an integer
+//glyph number is determined from the glyph sheet used in the renderer
+//starting from 0 and going left to right, top to bottom
+kTerminalData.write(28)
 
-//setting the position/color while writing
-kTerminalData.setPosition(1, 2).write(2) // writing with an Int
-kTerminalData.write(exampleGlyph) // writing with a KTerminalGlyph
-kTerminalData.setColor(Color.WHITE, Color.CLEAR).write('#') // writing with a Char
+//writing a string
+//this requires an IBM Code Sheet 437 format glyph sheet as shown in the example ones given at the top of this readme
+//there is support for writing text in different orientations as well as several line wrapping options
+    //writing direction options
+    //KTerminalData.WRITE_LEFT_TO_RIGHT
+    //KTerminalData.WRITE_RIGHT_TO_LEFT
+    //KTerminalData.WRITE_TOP_TO_BOTTOM
+    //KTerminalData.WRITE_BOTTOM_TO_TOP
+    
+    //wrapping options
+    //KTerminalData.WRAP_NONE // no wrapping
+    //KTerminalData.WRAP_NO_SHIFT // will wrap on same line
+    //KTerminalData.WRAP_POSITIVE_SHIFT // x or y will increase on wrap depending on writing direction
+    //KTerminalsData.WRAP_NEGATIVE_SHIFT //x or y will increase on wrap depending on writing direction
+KTerminalData.write("Example")
+kTerminalData.write("Example", direction = KTerminalData.WRITE_RIGHT_TO_LEFT, wrapping = KTerminalData.WRAP_POSITIVE_SHIFT)
+```
 
-//writing a string, string writing supports rotation
-    //0 == left to right, this is the default
-    //1 == top to bottom
-    //2 == right to left
-    //3 == bottom to top
+### Shape Drawing
 
-kTerminalData.write("Test") // will go from cursor position left to right
-kTerminalData.write("Test", 1) // will go from cursor position top to bottom
+There are several shape drawing options:
 
-//shape drawing
 kTerminalData.drawRect(
         width = 3
         height = 4,

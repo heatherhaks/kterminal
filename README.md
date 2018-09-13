@@ -192,6 +192,19 @@ kTerminalData.drawBox(
         bottomRight = '*',
         horizontal = '-',
         vertical = '|')
+        
+//a hollow circle, cursor position is the center of the circle, radius starts at cursor position
+kTerminalData.drawCircle(
+        radius = 5,
+        char = '#')
+
+//a hollow ellipse, draws similar to a rectangle
+//the cursor position is the top left corner of the rect surrounding the ellipse
+kTerminalData.drawEllipse(
+        width = 10,
+        height = 5,
+        char = '#')
+
 ```
 
 

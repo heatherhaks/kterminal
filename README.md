@@ -103,9 +103,9 @@ kTerminalRenderer.set(tilesetFile = "otherFontSheet.png", scale = 1f)
 kTerminalData.resize(width = 80, height = 60)
 ```
 
-### Writing
+### Writing - Bracket Syntax
 
-KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input position and color information in brackets like in the following examples, but doing so is optional for both position and color. There are also several functions for shape drawing.
+KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input cursor information in brackets like in the following examples, but doing so is optional. There are also several functions for shape drawing.
 
 ```     
 //setting cursor info
@@ -128,10 +128,6 @@ kTerminalData[x, y].write(2) // writing with an Int
 kTerminalData[x, y].write(exampleGlyph) // writing with a KTerminalGlyph
 kTerminalData[x, y][foregroundColor, backgroundColor].write('#') // writing with a Char
 
-//java writing
-kTerminalData.setCursor(x, y, foregroundColor, backgroundColor);
-kTerminalData.write('#');
-
 //shape drawing
 kTerminalData[x, y][foregroundColor, backgroundColor].drawRect(
         width = 3
@@ -153,6 +149,56 @@ kTerminalData.drawBox(
         horizontal = '-',
         vertical = '|')
 ```
+
+### Writing - Normal Syntax
+
+KTerminal has an internal cursor that stores the starting position for writing as well as the colors. You can input cursor information in functions right after eachother like in the following examples, but doing so is optional. There are also several functions for shape drawing. This is the method you will need to use if you use KTerminal in Java.
+
+```     
+//setting cursor info
+kTerminalData.setCursorPosition(x, y).setCursorColor(Color.GREEN, Color(0f, 0f, 1f, 0.5f))
+//using the current settings of the internal cursor:
+kTerminalData.write("Example string.")
+
+//possible cursor settings, can be called in any order right after eachother
+        //position
+        kTerminalData.setCursorPosition(x, y)
+        //color
+        kTerminalData.setCursorColor(foreground, background) // accepts LibGDX Colors or ABGR float bits
+        //rotation
+        kTerminalData.setCursorRotation(rotationInDegrees)
+        //scaling
+        kTerminalData.setCursorScale(scale)
+        //flipping
+        kTerminalData.setCursorFlip(isFlippedX, isFlippedY)
+
+//setting the position/color while writing
+kTerminalData.setPosition(1, 2).write(2) // writing with an Int
+kTerminalData.write(exampleGlyph) // writing with a KTerminalGlyph
+kTerminalData.setColor(Color.WHITE, Color.CLEAR).write('#') // writing with a Char
+
+//shape drawing
+kTerminalData.drawRect(
+        width = 3
+        height = 4,
+        char = ' '
+        isFilled = true) // whether it's filled or just the outline
+        
+//doesn't have to be a straight line
+kTerminalData.drawLine(endX, endY, '#')
+
+//a hollow rect where you can specify different characters for each corner and horizontal and vertical sides
+kTerminalData.drawBox(
+        width = 5,
+        height = 10,
+        topLeft = '*',
+        topRight = '*',
+        bottomLeft = '*',
+        bottomRight = '*',
+        horizontal = '-',
+        vertical = '|')
+```
+
 
 ### Clearing
 

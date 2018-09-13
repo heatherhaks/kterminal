@@ -122,11 +122,11 @@ class KTerminalRenderer(val batch: SpriteBatch,
     }
 
     fun render(x: Float, y: Float, kTerminalData: KTerminalData) {
-        val originalColor = batch.color
+        val originalColor = batch.color.cpy()
 
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
-                batch.color = kTerminalData.terminal[i][j].background
+                batch.setColor(kTerminalData.terminal[i][j].backgroundColor)
                 batch.draw( backgroundTexture,
                         x + (i * scaledGlyphWidth),
                         y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
@@ -137,7 +137,7 @@ class KTerminalRenderer(val batch: SpriteBatch,
 
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
-                batch.color = kTerminalData.terminal[i][j].foreground
+                batch.setColor(kTerminalData.terminal[i][j].foregroundColor)
 
                 val glyph = kTerminalData.terminal[i][j]
                 val scaleX = if(glyph.isFlippedY) -glyph.scale else glyph.scale

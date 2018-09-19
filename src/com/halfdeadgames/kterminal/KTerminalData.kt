@@ -279,17 +279,25 @@ class KTerminalData(width: Int,
         clear(width, height)
     }
 
+    private fun plotRect(width: Int, height: Int) : List<Pair<Int, Int>> {
+        val output: MutableList<Pair<Int, Int>> = mutableListOf()
+
+
+
+        return output
+    }
+
     @JvmOverloads fun drawRect(width: Int,
                                height: Int,
                                char: Char = ' ',
-                               isFilled: Boolean = true) {
+                               isFilled: Boolean = false) {
         drawRect(width, height, char.toInt(), isFilled)
     }
 
     @JvmOverloads fun drawRect(width: Int,
                  height: Int,
                  value: Int,
-                 isFilled: Boolean = true) {
+                 isFilled: Boolean = false) {
 
         val startX = workingCursor.x
         val startY = workingCursor.y
@@ -468,19 +476,15 @@ class KTerminalData(width: Int,
         return output
     }
 
-    fun drawEllipse(width: Int, height: Int, char: Char, isFilled: Boolean = false, fillValue: Char) {
+    @JvmOverloads fun drawEllipse(width: Int, height: Int, char: Char, isFilled: Boolean = false, fillValue: Char) {
         drawEllipse(width, height, char.toInt(), isFilled, fillValue.toInt())
     }
 
-    fun drawEllipse(width: Int, height: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
+    @JvmOverloads fun drawEllipse(width: Int, height: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
         val ellipsePlot = plotEllipseRect(cursor.x - 1, cursor.y - 1, cursor.x + width - 2, cursor.y + height - 2)
 
         drawShape(ellipsePlot, value)
         if(isFilled) fillShape(ellipsePlot, fillValue)
-    }
-
-    private fun distance2(x0: Int, y0: Int, x1: Int, y1: Int) : Int {
-        return ((x1 -x0) * (x1 -x0)) + ((y1 - y0) * (y1 - y0))
     }
 
     private fun plotCircle(centerX: Int, centerY: Int, radius: Int) : List<Pair<Int, Int>> {
@@ -504,11 +508,11 @@ class KTerminalData(width: Int,
         return output.toList()
     }
 
-    fun drawCircle(radius: Int, char: Char, isFilled: Boolean = false, fillValue: Char = char) {
+    @JvmOverloads fun drawCircle(radius: Int, char: Char, isFilled: Boolean = false, fillValue: Char = char) {
         drawCircle(radius, char.toInt(), isFilled, fillValue.toInt())
     }
 
-    fun drawCircle(radius: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
+    @JvmOverloads fun drawCircle(radius: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
         val circlePlot = plotCircle(cursor.x - 1, cursor.y - 1, radius - 1)
 
         drawShape(circlePlot, value)

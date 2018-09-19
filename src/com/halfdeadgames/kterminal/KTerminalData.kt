@@ -5,6 +5,7 @@ import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotCircle
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotEllipse
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotLine
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotRect
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotTriangle
 
 class KTerminalData(width: Int,
                     height: Int,
@@ -445,6 +446,57 @@ class KTerminalData(width: Int,
 
         drawShape(circlePlot, value)
         if(isFilled) fillShape(circlePlot, fillValue, fillForeground, fillBackground)
+    }
+
+    fun drawTriangle(leftX: Int,
+                     leftY: Int,
+                     rightX: Int,
+                     rightY: Int,
+                     char: Char,
+                     isFilled: Boolean,
+                     fillChar: Char,
+                     fillForeground: Color,
+                     fillBackground: Color) {
+        drawTriangle(leftX, leftY, rightX, rightY, char, isFilled, fillChar, fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+    
+    @JvmOverloads fun drawTriangle(leftX: Int,
+                                   leftY: Int,
+                                   rightX: Int,
+                                   rightY: Int,
+                                   char: Char,
+                                   isFilled: Boolean = false,
+                                   fillChar: Char = char,
+                                   fillForeground: Float = cursor.foregroundColor,
+                                   fillBackground: Float = cursor.backgroundColor) {
+        drawTriangle(leftX, leftY, rightX, rightY, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
+    }
+    
+    fun drawTringle(leftX: Int,
+                    leftY: Int,
+                    rightX: Int,
+                    rightY: Int,
+                    value: Int,
+                    isFilled: Boolean,
+                    fillValue: Int,
+                    fillForeground: Color,
+                    fillBackground: Color) {
+        drawTriangle(leftX, leftY, rightX, rightY, value, isFilled, fillValue, fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+
+    @JvmOverloads fun drawTriangle(leftX: Int,
+                                   leftY: Int,
+                                   rightX: Int,
+                                   rightY: Int,
+                                   value: Int,
+                                   isFilled: Boolean = false,
+                                   fillValue: Int = value,
+                                   fillForeground: Float = cursor.foregroundColor,
+                                   fillBackground: Float = cursor.backgroundColor) {
+        val trianglePlot = plotTriangle(cursor.x, cursor.y, leftX, leftY, rightX, rightY)
+
+        drawShape(trianglePlot, value)
+        if(isFilled) fillShape(trianglePlot, fillValue, fillForeground, fillBackground)
     }
 
     fun drawBox(width: Int,

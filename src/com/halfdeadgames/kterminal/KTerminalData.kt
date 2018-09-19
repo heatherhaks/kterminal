@@ -311,6 +311,36 @@ class KTerminalData(width: Int,
         }
     }
 
+    private fun fillShape(shapeList: List<Pair<Int, Int>>, value: Int) {
+        val shapeListSorted = shapeList.sortedWith(compareBy<Pair<Int, Int>>{it.second}.thenBy { it.first })
+
+        val firstY = shapeListSorted.first().second
+        val lastY = shapeListSorted.last().second
+
+        shapeListSorted.forEachIndexed { index, pair ->
+            if(index + 1 < shapeListSorted.size) {
+                if(pair.second != firstY && pair.second != lastY) {
+                    if( pair.second == shapeListSorted[index + 1].second
+                        && pair.first <= shapeListSorted[index + 1].first - 2) {
+                        for(i in pair.first + 1 until shapeListSorted[index + 1].first) {
+                            workingCursor.x = i
+                            workingCursor.y = pair.second
+                            write(value)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun drawShape(shapeList: List<Pair<Int, Int>>, value: Int) {
+        shapeList.forEach {
+            workingCursor.x = it.first
+            workingCursor.y = it.second
+            write(value)
+        }
+    }
+
     private fun plotLine(x0: Int, y0: Int, x1: Int, y1: Int) :  List<Pair<Int, Int>> {
         val output: MutableList<Pair<Int, Int>> = mutableListOf(Pair(x0, y0), Pair(x1, y1))
 
@@ -380,12 +410,7 @@ class KTerminalData(width: Int,
     }
     fun drawLine(endX: Int, endY: Int, value: Int) {
         val linePlot = plotLine(workingCursor.x, workingCursor.y, endX, endY).toList()
-
-        linePlot.forEach{
-            workingCursor.x = it.first
-            workingCursor.y = it.second
-            write(value)
-        }
+        drawShape(linePlot, value)
     }
 
     private fun plotEllipseRect(x0: Int, y0: Int, x1: Int, y1: Int) :  List<Pair<Int, Int>> {
@@ -443,26 +468,19 @@ class KTerminalData(width: Int,
         return output
     }
 
-    fun drawEllipse(width: Int, height: Int, char: Char) {
-        drawEllipse(width, height, char.toInt())
+    fun drawEllipse(width: Int, height: Int, char: Char, isFilled: Boolean = false, fillValue: Char) {
+        drawEllipse(width, height, char.toInt(), isFilled, fillValue.toInt())
     }
 
-    fun drawEllipse(width: Int, height: Int, value: Int) {
+    fun drawEllipse(width: Int, height: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
         val ellipsePlot = plotEllipseRect(cursor.x - 1, cursor.y - 1, cursor.x + width - 2, cursor.y + height - 2)
 
-        ellipsePlot.toList().forEach{
-            workingCursor.x = it.first
-            workingCursor.y = it.second
-            write(value)
-        }
+        drawShape(ellipsePlot, value)
+        if(isFilled) fillShape(ellipsePlot, fillValue)
     }
 
     private fun distance2(x0: Int, y0: Int, x1: Int, y1: Int) : Int {
         return ((x1 -x0) * (x1 -x0)) + ((y1 - y0) * (y1 - y0))
-    }
-
-    private fun distance(x0: Int, y0: Int, x1: Int, y1: Int) : Int {
-        return Math.sqrt(distance2(x0, y0, x1, y1).toDouble()).toInt()
     }
 
     private fun plotCircle(centerX: Int, centerY: Int, radius: Int) : List<Pair<Int, Int>> {
@@ -486,18 +504,15 @@ class KTerminalData(width: Int,
         return output.toList()
     }
 
-    fun drawCircle(radius: Int, char: Char) {
-        drawCircle(radius, char.toInt())
+    fun drawCircle(radius: Int, char: Char, isFilled: Boolean = false, fillValue: Char = char) {
+        drawCircle(radius, char.toInt(), isFilled, fillValue.toInt())
     }
 
-    fun drawCircle(radius: Int, value: Int) {
+    fun drawCircle(radius: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
         val circlePlot = plotCircle(cursor.x - 1, cursor.y - 1, radius - 1)
 
-        circlePlot.toList().forEach{
-            workingCursor.x = it.first
-            workingCursor.y = it.second
-            write(value)
-        }
+        drawShape(circlePlot, value)
+        if(isFilled) fillShape(circlePlot, fillValue)
     }
 
     fun drawBox(width: Int, height: Int, topLeft: Int, topRight: Int, bottomLeft: Int, bottomRight: Int, horizontal: Int, vertical: Int) {

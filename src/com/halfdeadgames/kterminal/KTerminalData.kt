@@ -282,26 +282,7 @@ class KTerminalData(width: Int,
         clear(width, height)
     }
 
-    @JvmOverloads fun drawRect(width: Int,
-                               height: Int,
-                               char: Char = ' ',
-                               isFilled: Boolean = false,
-                               fillChar: Char = char) {
-        drawRect(width, height, char.toInt(), isFilled, fillChar.toInt())
-    }
-
-    @JvmOverloads fun drawRect(width: Int,
-                 height: Int,
-                 value: Int,
-                 isFilled: Boolean = false,
-                 fillValue: Int = value) {
-        val plotList = plotRect(cursor.x, cursor.y, width, height)
-
-        drawShape(plotList, value)
-        if(isFilled) fillShape(plotList, fillValue)
-    }
-
-    private fun fillShape(shapeList: List<Pair<Int, Int>>, value: Int) {
+    private fun fillShape(shapeList: List<Pair<Int, Int>>, value: Int, foregroundColor: Float, backgroundColor: Float) {
         val shapeListSorted = shapeList.sortedWith(compareBy<Pair<Int, Int>>{it.second}.thenBy { it.first })
 
         val firstY = shapeListSorted.first().second
@@ -311,10 +292,12 @@ class KTerminalData(width: Int,
             if(index + 1 < shapeListSorted.size) {
                 if(pair.second != firstY && pair.second != lastY) {
                     if( pair.second == shapeListSorted[index + 1].second
-                        && pair.first <= shapeListSorted[index + 1].first - 2) {
+                            && pair.first <= shapeListSorted[index + 1].first - 2) {
                         for(i in pair.first + 1 until shapeListSorted[index + 1].first) {
                             workingCursor.x = i
                             workingCursor.y = pair.second
+                            workingCursor.foregroundColor = foregroundColor
+                            workingCursor.backgroundColor = backgroundColor
                             write(value)
                         }
                     }
@@ -331,6 +314,49 @@ class KTerminalData(width: Int,
         }
     }
 
+    fun drawRect(width: Int,
+                 height: Int,
+                 char: Char = ' ',
+                 isFilled: Boolean = false,
+                 fillChar: Char = char,
+                 fillForeground: Color,
+                 fillBackground: Color) {
+        drawRect(width, height, char.toInt(), isFilled, fillChar.toInt(), fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+
+    @JvmOverloads fun drawRect(width: Int,
+                               height: Int,
+                               char: Char = ' ',
+                               isFilled: Boolean = false,
+                               fillChar: Char = char,
+                               fillForeground: Float = cursor.foregroundColor,
+                               fillBackground: Float = cursor.backgroundColor) {
+        drawRect(width, height, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
+    }
+
+    fun drawRect(width: Int,
+                 height: Int,
+                 value: Int,
+                 isFilled: Boolean,
+                 fillValue: Int,
+                 fillForeground: Color,
+                 fillBackground: Color) {
+        drawRect(width, height, value, isFilled, fillValue, fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+
+    @JvmOverloads fun drawRect(width: Int,
+                               height: Int,
+                               value: Int,
+                               isFilled: Boolean = false,
+                               fillValue: Int = value,
+                               fillForeground: Float = cursor.foregroundColor,
+                               fillBackground: Float = cursor.backgroundColor) {
+        val plotList = plotRect(cursor.x, cursor.y, width, height)
+
+        drawShape(plotList, value)
+        if(isFilled) fillShape(plotList, fillValue, fillForeground, fillBackground)
+    }
+
     fun drawLine(endX: Int, endY: Int, char: Char) {
         drawLine(endX, endY, char.toInt())
     }
@@ -339,33 +365,148 @@ class KTerminalData(width: Int,
         drawShape(linePlot, value)
     }
 
-    @JvmOverloads fun drawEllipse(width: Int, height: Int, char: Char, isFilled: Boolean = false, fillChar: Char) {
-        drawEllipse(width, height, char.toInt(), isFilled, fillChar.toInt())
+    fun drawEllipse(width: Int,
+                    height: Int,
+                    char: Char,
+                    isFilled: Boolean,
+                    fillChar: Char,
+                    fillForeground: Color,
+                    fillBackground: Color) {
+        drawEllipse(width, height, char, isFilled, fillChar, fillForeground.toFloatBits(), fillBackground.toFloatBits())
     }
 
-    @JvmOverloads fun drawEllipse(width: Int, height: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
+    @JvmOverloads fun drawEllipse(width: Int,
+                                  height: Int,
+                                  char: Char,
+                                  isFilled: Boolean = false,
+                                  fillChar: Char = ' ',
+                                  fillForeground: Float = cursor.foregroundColor,
+                                  fillBackground: Float = cursor.backgroundColor) {
+        drawEllipse(width, height, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
+    }
+
+    fun drawEllipse(width: Int,
+                    height: Int,
+                    value: Int,
+                    isFilled: Boolean = false,
+                    fillValue: Int = value,
+                    fillForeground: Color,
+                    fillBackground: Color) {
+        drawEllipse(width, height, value, isFilled, fillValue, fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+
+    @JvmOverloads fun drawEllipse(width: Int,
+                                  height: Int,
+                                  value: Int,
+                                  isFilled: Boolean = false,
+                                  fillValue: Int = value,
+                                  fillForeground: Float = cursor.foregroundColor,
+                                  fillBackground: Float = cursor.backgroundColor) {
         val ellipsePlot = plotEllipse(cursor.x, cursor.y, cursor.x + width, cursor.y + height)
 
         drawShape(ellipsePlot, value)
-        if(isFilled) fillShape(ellipsePlot, fillValue)
+        if(isFilled) fillShape(ellipsePlot, fillValue, fillForeground, fillBackground)
     }
 
-    @JvmOverloads fun drawCircle(radius: Int, char: Char, isFilled: Boolean = false, fillChar: Char = char) {
-        drawCircle(radius, char.toInt(), isFilled, fillChar.toInt())
+    fun drawCircle(radius: Int,
+                   char: Char,
+                   isFilled: Boolean = false,
+                   fillChar: Char = char,
+                   fillForeground: Color,
+                   fillBackground: Color) {
+        drawCircle(radius, char, isFilled, fillChar, fillForeground.toFloatBits(), fillBackground.toFloatBits())
     }
 
-    @JvmOverloads fun drawCircle(radius: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
+    @JvmOverloads fun drawCircle(radius: Int,
+                                 char: Char,
+                                 isFilled: Boolean = false,
+                                 fillChar: Char = char,
+                                 fillForeground: Float = cursor.foregroundColor,
+                                 fillBackground: Float = cursor.backgroundColor) {
+        drawCircle(radius, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
+    }
+
+    fun drawCircle(radius: Int,
+                   value: Int,
+                   isFilled: Boolean,
+                   fillValue: Int,
+                   fillForeground: Color,
+                   fillBackground: Color) {
+        drawCircle(radius, value, isFilled, fillValue, fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+
+    @JvmOverloads fun drawCircle(radius: Int,
+                                 value: Int,
+                                 isFilled: Boolean = false,
+                                 fillValue: Int = value,
+                                 fillForeground: Float = cursor.foregroundColor,
+                                 fillBackground: Float = cursor.backgroundColor) {
         val circlePlot = plotCircle(cursor.x, cursor.y, radius)
 
         drawShape(circlePlot, value)
-        if(isFilled) fillShape(circlePlot, fillValue)
+        if(isFilled) fillShape(circlePlot, fillValue, fillForeground, fillBackground)
     }
 
-    fun drawBox(width: Int, height: Int, topLeft: Char, topRight: Char, bottomLeft: Char, bottomRight: Char, horizontal: Char, vertical: Char) {
-        drawBox(width, height, topLeft.toInt(), topRight.toInt(), bottomLeft.toInt(), bottomRight.toInt(), horizontal.toInt(), vertical.toInt())
+    fun drawBox(width: Int,
+                height: Int,
+                topLeft: Char,
+                topRight: Char,
+                bottomLeft: Char,
+                bottomRight: Char,
+                horizontal: Char,
+                vertical: Char,
+                isFilled: Boolean,
+                fillChar: Char,
+                fillForeground: Color,
+                fillBackground: Color) {
+        drawBox(width, height, topLeft, topRight, bottomLeft, bottomRight, horizontal, vertical, isFilled, fillChar,
+                fillForeground.toFloatBits(), fillBackground.toFloatBits())
     }
 
-    fun drawBox(width: Int, height: Int, topLeft: Int, topRight: Int, bottomLeft: Int, bottomRight: Int, horizontal: Int, vertical: Int) {
+    @JvmOverloads fun drawBox(width: Int,
+                              height: Int,
+                              topLeft: Char,
+                              topRight: Char,
+                              bottomLeft: Char,
+                              bottomRight: Char,
+                              horizontal: Char,
+                              vertical: Char,
+                              isFilled: Boolean = false,
+                              fillChar: Char = ' ',
+                              fillForeground: Float = cursor.foregroundColor,
+                              fillBackground: Float = cursor.backgroundColor) {
+        drawBox(width, height, topLeft.toInt(), topRight.toInt(), bottomLeft.toInt(), bottomRight.toInt(),
+                horizontal.toInt(), vertical.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
+    }
+
+    fun drawBox(width: Int,
+                height: Int,
+                topLeft: Int,
+                topRight: Int,
+                bottomLeft: Int,
+                bottomRight: Int,
+                horizontal: Int,
+                vertical: Int,
+                isFilled: Boolean,
+                fillValue: Int,
+                fillForeground: Color,
+                fillBackground: Color) {
+        drawBox(width, height, topLeft, topRight, bottomLeft, bottomRight, horizontal, vertical, isFilled, fillValue,
+                fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+
+    @JvmOverloads fun drawBox(width: Int,
+                              height: Int,
+                              topLeft: Int,
+                              topRight: Int,
+                              bottomLeft: Int,
+                              bottomRight: Int,
+                              horizontal: Int,
+                              vertical: Int,
+                              isFilled: Boolean = false,
+                              fillValue: Int = 0,
+                              fillForeground: Float = cursor.foregroundColor,
+                              fillBackground: Float = cursor.backgroundColor) {
         val plotList = plotRect(cursor.x, cursor.y, width, height)
 
         plotList.forEach {
@@ -388,26 +529,85 @@ class KTerminalData(width: Int,
                 else -> write(horizontal)
             }
         }
+
+        if(isFilled) fillShape(plotList, fillValue, fillForeground, fillBackground)
     }
 
-    fun drawDoubleBox(width: Int, height: Int) {
+    fun drawDoubleBox(width: Int,
+                      height: Int,
+                      isFilled: Boolean,
+                      fillChar: Char,
+                      fillForeground: Color,
+                      fillBackground: Color) {
+        drawDoubleBox(width, height, isFilled, fillChar, fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+
+    @JvmOverloads fun drawDoubleBox(width: Int,
+                                    height: Int,
+                                    isFilled: Boolean,
+                                    fillChar: Char,
+                                    fillForeground: Float = cursor.foregroundColor,
+                                    fillBackground: Float = cursor.backgroundColor) {
+        drawDoubleBox(width, height, isFilled, fillChar.toInt(), fillForeground, fillBackground)
+    }
+
+    fun drawDoubleBox(width: Int,
+                      height: Int,
+                      isFilled: Boolean,
+                      fillValue: Int,
+                      fillForeground: Color,
+                      fillBackground: Color) {
+        drawDoubleBox(width, height, isFilled, fillValue, fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+
+    @JvmOverloads fun drawDoubleBox(width: Int,
+                                    height: Int,
+                                    isFilled: Boolean = false,
+                                    fillValue: Int = 0,
+                                    fillForeground: Float = cursor.foregroundColor,
+                                    fillBackground: Float = cursor.backgroundColor) {
         drawBox(width, height,
                 KTerminalData.BOX_DOUBLE_DOWN_RIGHT,
                 KTerminalData.BOX_DOUBLE_DOWN_LEFT,
                 KTerminalData.BOX_DOUBLE_UP_RIGHT,
                 KTerminalData.BOX_DOUBLE_UP_LEFT,
                 KTerminalData.BOX_DOUBLE_HORIZONTAL,
-                KTerminalData.BOX_DOUBLE_VERTICAL)
+                KTerminalData.BOX_DOUBLE_VERTICAL,
+                isFilled, fillValue, fillForeground, fillBackground)
     }
 
-    fun drawSingleBox(width: Int, height: Int) {
+    fun drawSingleBox(width: Int,
+                      height: Int,
+                      isFilled: Boolean,
+                      fillChar: Char,
+                      fillForeground: Color,
+                      fillBackground: Color) {
+        drawSingleBox(width, height, isFilled, fillChar, fillForeground.toFloatBits(), fillBackground.toFloatBits())
+    }
+
+    @JvmOverloads fun drawSingleBox(width: Int,
+                                    height: Int,
+                                    isFilled: Boolean,
+                                    fillChar: Char,
+                                    fillForeground: Float = cursor.foregroundColor,
+                                    fillBackground: Float = cursor.backgroundColor) {
+        drawSingleBox(width, height, isFilled, fillChar.toInt(), fillForeground, fillBackground)
+    }
+
+    @JvmOverloads fun drawSingleBox(width: Int,
+                                    height: Int,
+                                    isFilled: Boolean = false,
+                                    fillValue: Int = 0,
+                                    fillForeground: Float = cursor.foregroundColor,
+                                    fillBackground: Float = cursor.backgroundColor) {
         drawBox(width, height,
                 KTerminalData.BOX_SINGLE_DOWN_RIGHT,
                 KTerminalData.BOX_SINGLE_DOWN_LEFT,
                 KTerminalData.BOX_SINGLE_UP_RIGHT,
                 KTerminalData.BOX_SINGLE_UP_LEFT,
                 KTerminalData.BOX_SINGLE_HORIZONTAL,
-                KTerminalData.BOX_SINGLE_VERTICAL)
+                KTerminalData.BOX_SINGLE_VERTICAL,
+                isFilled, fillValue, fillForeground, fillBackground)
     }
 
     override fun toString(): String {

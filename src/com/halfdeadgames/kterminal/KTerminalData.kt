@@ -1,7 +1,10 @@
 package com.halfdeadgames.kterminal
 
 import com.badlogic.gdx.graphics.Color
-import kotlin.math.abs
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotCircle
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotEllipse
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotLine
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotRect
 
 class KTerminalData(width: Int,
                     height: Int,
@@ -279,44 +282,23 @@ class KTerminalData(width: Int,
         clear(width, height)
     }
 
-    private fun plotRect(width: Int, height: Int) : List<Pair<Int, Int>> {
-        val output: MutableList<Pair<Int, Int>> = mutableListOf()
-
-
-
-        return output
-    }
-
     @JvmOverloads fun drawRect(width: Int,
                                height: Int,
                                char: Char = ' ',
-                               isFilled: Boolean = false) {
-        drawRect(width, height, char.toInt(), isFilled)
+                               isFilled: Boolean = false,
+                               fillChar: Char = char) {
+        drawRect(width, height, char.toInt(), isFilled, fillChar.toInt())
     }
 
     @JvmOverloads fun drawRect(width: Int,
                  height: Int,
                  value: Int,
-                 isFilled: Boolean = false) {
+                 isFilled: Boolean = false,
+                 fillValue: Int = value) {
+        val plotList = plotRect(cursor.x, cursor.y, width, height)
 
-        val startX = workingCursor.x
-        val startY = workingCursor.y
-
-        for(i in startX until startX + width) {
-            for(j in startY until startY + height) {
-                workingCursor.x = i
-                workingCursor.y = j
-                if(isFilled) {
-                    write(value)
-                } else {
-                    if(i == startX || i == startX + width - 1) {
-                        write(value)
-                    } else if(j == startY || j == startY + height - 1) {
-                        write(value)
-                    }
-                }
-            }
-        }
+        drawShape(plotList, value)
+        if(isFilled) fillShape(plotList, fillValue)
     }
 
     private fun fillShape(shapeList: List<Pair<Int, Int>>, value: Int) {
@@ -349,200 +331,63 @@ class KTerminalData(width: Int,
         }
     }
 
-    private fun plotLine(x0: Int, y0: Int, x1: Int, y1: Int) :  List<Pair<Int, Int>> {
-        val output: MutableList<Pair<Int, Int>> = mutableListOf(Pair(x0, y0), Pair(x1, y1))
-
-        fun plotLineLow(x0: Int, y0: Int, x1: Int, y1: Int){
-            val dx = x1 - x0
-            var dy = y1 - y0
-            var yi = 1
-
-            if(dy < 0) {
-                yi = -1
-                dy = -dy
-            }
-            var d = 2*dy - dx
-            var y = y0
-
-            for(x in x0 until x1) {
-                output.add(Pair(x, y))
-                if(d > 0) {
-                    y += yi
-                    d -= 2*dx
-                }
-                d += 2*dy
-            }
-        }
-
-        fun plotLineHigh(x0: Int, y0: Int, x1: Int, y1: Int) {
-            var dx = x1 - x0
-            val dy = y1 - y0
-            var xi = 1
-
-            if(dx < 0) {
-                xi = -1
-                dx = -dx
-            }
-            var d = 2*dx - dy
-            var x = x0
-
-            for(y in y0 until y1) {
-                output.add(Pair(x, y))
-                if(d > 0) {
-                    x += xi
-                    d -= 2*dy
-                }
-                d += 2*dx
-            }
-        }
-
-        if(Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
-            if (x0 > x1) {
-                plotLineLow(x1, y1, x0, y0)
-            } else {
-                plotLineLow(x0, y0, x1, y1)
-            }
-        } else {
-            if(y0 > y1) {
-                plotLineHigh(x1, y1, x0, y0)
-            } else {
-                plotLineHigh(x0, y0, x1, y1)
-            }
-        }
-
-        return output.toList()
-    }
-
     fun drawLine(endX: Int, endY: Int, char: Char) {
         drawLine(endX, endY, char.toInt())
     }
     fun drawLine(endX: Int, endY: Int, value: Int) {
-        val linePlot = plotLine(workingCursor.x, workingCursor.y, endX, endY).toList()
+        val linePlot = plotLine(cursor.x, cursor.y, endX, endY).toList()
         drawShape(linePlot, value)
     }
 
-    private fun plotEllipseRect(x0: Int, y0: Int, x1: Int, y1: Int) :  List<Pair<Int, Int>> {
-        val output: MutableList<Pair<Int, Int>> = mutableListOf()
-
-        var x0 = x0
-        var y0 = y0
-        var x1 = x1
-        var y1 = y1
-        var a = abs(x1 - x0)
-        val b = abs(y1 - y0)
-        var b1 = b and 1 /* values of diameter */
-        var dx = (4 * (1 - a) * b * b).toLong()
-        var dy = (4 * (b1 + 1) * a * a).toLong() /* error increment */
-        var err = dx + dy + (b1 * a * a).toLong()
-        var e2: Long /* error of 1.step */
-
-        if (x0 > x1) {
-            x0 = x1
-            x1 += a
-        } /* if called with swapped points */
-        if (y0 > y1) y0 = y1 /* .. exchange them */
-        y0 += (b + 1) / 2
-        y1 = y0 - b1   /* starting pixel */
-        a *= 8 * a
-        b1 = 8 * b * b
-
-        do {
-            output.add(Pair(x1, y0)) /*   I. Quadrant */
-            output.add(Pair(x0, y0)) /*  II. Quadrant */
-            output.add(Pair(x0, y1)) /* III. Quadrant */
-            output.add(Pair(x1, y1)) /*  IV. Quadrant */
-            e2 = 2 * err
-            if (e2 <= dy) {
-                y0++
-                y1--
-                dy += a.toLong()
-                err += dy
-            }  /* y step */
-            if (e2 >= dx || 2 * err > dy) {
-                x0++
-                x1--
-                dx += b1.toLong()
-                err += dx
-            } /* x step */
-        } while (x0 <= x1)
-
-        while (y0 - y1 < b) {  /* too early stop of flat ellipses a=1 */
-            output.add(Pair(x0 - 1, y0)) /* -> finish tip of ellipse */
-            output.add(Pair(x1 + 1, y0++))
-            output.add(Pair(x0 - 1, y1))
-            output.add(Pair(x1 + 1, y1--))
-        }
-
-        return output
-    }
-
-    @JvmOverloads fun drawEllipse(width: Int, height: Int, char: Char, isFilled: Boolean = false, fillValue: Char) {
-        drawEllipse(width, height, char.toInt(), isFilled, fillValue.toInt())
+    @JvmOverloads fun drawEllipse(width: Int, height: Int, char: Char, isFilled: Boolean = false, fillChar: Char) {
+        drawEllipse(width, height, char.toInt(), isFilled, fillChar.toInt())
     }
 
     @JvmOverloads fun drawEllipse(width: Int, height: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
-        val ellipsePlot = plotEllipseRect(cursor.x - 1, cursor.y - 1, cursor.x + width - 2, cursor.y + height - 2)
+        val ellipsePlot = plotEllipse(cursor.x, cursor.y, cursor.x + width, cursor.y + height)
 
         drawShape(ellipsePlot, value)
         if(isFilled) fillShape(ellipsePlot, fillValue)
     }
 
-    private fun plotCircle(centerX: Int, centerY: Int, radius: Int) : List<Pair<Int, Int>> {
-        val output: MutableList<Pair<Int, Int>> = mutableListOf()
-
-        var r = radius
-        var x = -r
-        var y = 0
-        var err = 2 - (2 * r)
-
-        do {
-            output.add(Pair(centerX - x, centerY + y))
-            output.add(Pair(centerX -y, centerY - x))
-            output.add(Pair(centerX + x, centerY - y))
-            output.add(Pair(centerX + y, centerY + x))
-            r = err
-            if(r <= y) err += ++y * 2 + 1
-            if(r > x || err > y) err += ++x * 2 + 1
-        } while(x < 0)
-
-        return output.toList()
-    }
-
-    @JvmOverloads fun drawCircle(radius: Int, char: Char, isFilled: Boolean = false, fillValue: Char = char) {
-        drawCircle(radius, char.toInt(), isFilled, fillValue.toInt())
+    @JvmOverloads fun drawCircle(radius: Int, char: Char, isFilled: Boolean = false, fillChar: Char = char) {
+        drawCircle(radius, char.toInt(), isFilled, fillChar.toInt())
     }
 
     @JvmOverloads fun drawCircle(radius: Int, value: Int, isFilled: Boolean = false, fillValue: Int = value) {
-        val circlePlot = plotCircle(cursor.x - 1, cursor.y - 1, radius - 1)
+        val circlePlot = plotCircle(cursor.x, cursor.y, radius)
 
         drawShape(circlePlot, value)
         if(isFilled) fillShape(circlePlot, fillValue)
     }
 
-    fun drawBox(width: Int, height: Int, topLeft: Int, topRight: Int, bottomLeft: Int, bottomRight: Int, horizontal: Int, vertical: Int) {
-        val startX = workingCursor.x
-        val startY = workingCursor.y
-
-        workingCursor.set(startX + 1, startY)
-        drawLine(startX + width - 2, startY, horizontal)
-        workingCursor.set(startX + 1, startY + height - 1)
-        drawLine(startX + width - 2, startY + height - 1, horizontal)
-        workingCursor.set(startX, startY + 1)
-        drawLine(startX, startY + height -2 , vertical)
-        workingCursor.set(startX + width - 1, startY + 1)
-        drawLine(startX + width - 1, startY + height - 2 , vertical)
-        workingCursor.set(startX, startY)
-        write(topLeft)
-        workingCursor.set(startX + width - 1, startY)
-        write(topRight)
-        workingCursor.set(startX, startY + height -1)
-        write(bottomLeft)
-        workingCursor.set(startX + width - 1, startY + height - 1)
-        write(bottomRight)
-    }
-
     fun drawBox(width: Int, height: Int, topLeft: Char, topRight: Char, bottomLeft: Char, bottomRight: Char, horizontal: Char, vertical: Char) {
         drawBox(width, height, topLeft.toInt(), topRight.toInt(), bottomLeft.toInt(), bottomRight.toInt(), horizontal.toInt(), vertical.toInt())
+    }
+
+    fun drawBox(width: Int, height: Int, topLeft: Int, topRight: Int, bottomLeft: Int, bottomRight: Int, horizontal: Int, vertical: Int) {
+        val plotList = plotRect(cursor.x, cursor.y, width, height)
+
+        plotList.forEach {
+            workingCursor.x = it.first
+            workingCursor.y = it.second
+
+            when(it.first) {
+                cursor.x ->
+                    when(it.second) {
+                        cursor.y -> write(topLeft)
+                        cursor.y + height - 1 -> write(bottomLeft)
+                        else -> write(vertical)
+                    }
+                cursor.x + width - 1 ->
+                    when(it.second) {
+                        cursor.y -> write(topRight)
+                        cursor.y + height - 1 -> write(bottomRight)
+                        else -> write(vertical)
+                    }
+                else -> write(horizontal)
+            }
+        }
     }
 
     fun drawDoubleBox(width: Int, height: Int) {

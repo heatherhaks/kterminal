@@ -157,5 +157,13 @@ class KTerminalShapePlotter {
 
             return output.toList()
         }
+
+        fun plotTriangle(topX: Int, topY: Int, leftX: Int, leftY: Int, rightX: Int, rightY: Int) : List<Pair<Int, Int>> {
+            val output: MutableList<Pair<Int, Int>> = mutableListOf()
+            output.addAll(plotLine(topX, topY, leftX, leftY))
+            output.addAll(plotLine(leftX, leftY, rightX, rightY))
+            output.addAll(plotLine(rightX, rightY, topX, topY))
+            return output.distinct()
+        }
     }
 }

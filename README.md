@@ -184,7 +184,7 @@ kTerminalData.drawRect(
 //doesn't have to be a straight line
 kTerminalData.drawLine(endX, endY, '#')
 
-//a hollow rect where you can specify different characters for each corner and horizontal and vertical sides
+//a rect where you can specify different characters for each corner and horizontal and vertical sides
 kTerminalData.drawBox(
         width = 5,
         height = 10,
@@ -195,18 +195,33 @@ kTerminalData.drawBox(
         horizontal = '-',
         vertical = '|')
         
-//a hollow circle, cursor position is the center of the circle, radius starts at cursor position
+//a circle, cursor position is the center of the circle, radius starts at cursor position
 kTerminalData.drawCircle(
         radius = 5,
         char = '#')
 
-//a hollow ellipse, draws similar to a rectangle
+//a ellipse, draws similar to a rectangle
 //the cursor position is the top left corner of the rect surrounding the ellipse
 kTerminalData.drawEllipse(
         width = 10,
         height = 5,
         char = '#')
+        
+//a triangle, cursor is the top point, you must specify the bottom left point and the bottom right point
+kTerminalData.drawTriangle(
+        leftX = 10,
+        leftY = 12
+        rightX = 20,
+        rightY = 12)
 
+//boxes using single or double lines, requires an IBM code page 437 compatible font sheet
+kTerminalData.drawSingleBox(
+        width = 10,
+        height = 5)
+
+kTerminalData.drawDoubleBox(
+        width = 20,
+        height = 10)
 ```
 
 

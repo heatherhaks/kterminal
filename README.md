@@ -170,14 +170,16 @@ kTerminalData.write("Example", direction = KTerminalData.WRITE_RIGHT_TO_LEFT, wr
 
 ### Shape Drawing
 
-There are several shape drawing options:
+There are several shape drawing options, all of which can optionally be filled in and if filled in can optionally have fill colors. They can take chars or ints, and libGdx Color objects or AGBR floats.
 
 ```
 kTerminalData.drawRect(
         width = 3
         height = 4,
         char = ' '
-        isFilled = true) // whether it's filled or just the outline
+        isFilled = true,
+        fillForeground = Color.WHITE,
+        fillBackground = Color.BLACK)
         
 //doesn't have to be a straight line
 kTerminalData.drawLine(endX, endY, '#')

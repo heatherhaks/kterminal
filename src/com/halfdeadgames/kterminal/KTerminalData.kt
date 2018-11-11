@@ -7,6 +7,7 @@ import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotLine
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotRect
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.Companion.plotTriangle
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class KTerminalData(width: Int,
                     height: Int,
                     var defaultForegroundColor: Float = Color.WHITE.toFloatBits(),

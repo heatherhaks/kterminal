@@ -2,6 +2,7 @@ package com.halfdeadgames.kterminal
 
 import kotlin.math.abs
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class KTerminalShapePlotter {
     companion object {
         fun plotRect(x: Int, y: Int, width: Int, height: Int) : List<Pair<Int, Int>> {

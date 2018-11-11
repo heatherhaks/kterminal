@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Disposable
 import java.nio.ByteBuffer
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class KTerminalRenderer(val batch: SpriteBatch,
                         tilesetFile: String,
                         var columns: Int = 16,

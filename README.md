@@ -59,10 +59,10 @@ allprojects {
 
 ```
 val kTerminalData = KTerminalData(
-        width = 33, // width in characters
-        height = 20, // height in characters
-        defaultForeground = Color.WHITE,
-        defaultBackground = Color.BLACK)
+            width = 33, // width in characters
+            height = 20, // height in characters
+            defaultForegroundColor = Color.WHITE.toFloatBits(),
+            defaultBackgroundColor = Color.BLACK.toFloatBits())
 
 val kTerminalRenderer = KTerminalRenderer(
         batch = spriteBatch) // the spritebatch to be used in rendering

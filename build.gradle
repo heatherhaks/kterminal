@@ -31,7 +31,8 @@ sourceSets {
 dependencies{
   compile "com.badlogicgames.gdx:gdx:$gdxVersion"
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  compile "io.github.libktx:ktx-app:1.9.8-b2"
+  compile "io.github.libktx:ktx-app:1.9.9-b1"
+  compile "io.github.libktx:ktx-graphics:1.9.9-b1"
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {

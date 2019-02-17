@@ -33,7 +33,7 @@ class KTerminalRenderer(val batch: SpriteBatch,
     }
 
     private fun init(tilesetFile: String?, scale: Float = 1f) {
-        val tempTilesetFile = tilesetFile ?: "fontSheet.png"
+        val tempTilesetFile = tilesetFile ?: "defaultKTerminalFontSheet.png"
 
         if(tilesetFile == null) {
             columns = 16

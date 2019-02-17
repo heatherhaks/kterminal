@@ -9,6 +9,8 @@ The goal of this project was to make an efficient, small way to emulate a termin
 - Supports any rectangular font sheet made of glyphs of the same size, with no borders around the glyphs. Glyphs do not have to be square. In order for string and char writing to work properly a 256 Extended Ascii ([IBM Code Page 437](https://en.wikipedia.org/wiki/Code_page_437)) font sheet must be used in the formats shown in the example font sheets. Dwarf Fortress font sheets are compatible. Font sheets can contain any glyph and doesn't have to conform to the above mentioned standard, and can contain more than the 256 possible glyphs in said standard.
 - Full color support for each glyph, including foreground color, background color, and transparency.
 - Vertical and horizontal flipping, rotation, and scaling of each glyph
+- Glyph offsets, meaning that glyphs are not confined to the center of their cell. This allows for smooth to move glyphs from cell to cell.
+- Includes a default font sheet, located here in the sources in the assets folder if you want to use it to make your own.
 
 ## Example Font Sheets
 Here are two font sheets. Glyphs must be in the order shown in order for string and char writing to appear properly, so if you tell it to write an 'a' char, an 'a' glyph appears on the terminal display.

@@ -1,11 +1,11 @@
 package com.halfdeadgames.kterminal
 
 import com.badlogic.gdx.graphics.Color
-import com.github.heatherhaks.kterminal.kterminal.KTerminalShapePlotter.plotCircle
-import com.github.heatherhaks.kterminal.kterminal.KTerminalShapePlotter.plotEllipse
-import com.github.heatherhaks.kterminal.kterminal.KTerminalShapePlotter.plotLine
-import com.github.heatherhaks.kterminal.kterminal.KTerminalShapePlotter.plotRect
-import com.github.heatherhaks.kterminal.kterminal.KTerminalShapePlotter.plotTriangle
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotCircle
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotEllipse
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotLine
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotRect
+import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotTriangle
 import ktx.graphics.copy
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")

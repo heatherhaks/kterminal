@@ -1,4 +1,4 @@
-package com.github.heatherhaks.kterminal.kterminal
+package com.halfdeadgames.kterminal
 
 import com.badlogic.gdx.graphics.Color
 

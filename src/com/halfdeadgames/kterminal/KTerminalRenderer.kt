@@ -11,7 +11,7 @@ import java.nio.ByteBuffer
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class KTerminalRenderer(val batch: SpriteBatch,
-                        tilesetFile: String,
+                        var tilesetFile: String? = null,
                         var columns: Int = 16,
                         var rows: Int = 16,
                         scale: Float = 1f
@@ -32,8 +32,16 @@ class KTerminalRenderer(val batch: SpriteBatch,
         init(tilesetFile, scale)
     }
 
-    private fun init(tilesetFile: String, scale: Float = 1f) {
-        val pixmap = Pixmap(Gdx.files.internal(tilesetFile))
+    private fun init(tilesetFile: String?, scale: Float = 1f) {
+        val tempTilesetFile = tilesetFile ?: "fontSheet.png"
+
+        if(tilesetFile == null) {
+            columns = 16
+            rows = 17
+        }
+
+        val pixmap = Pixmap(Gdx.files.internal(tempTilesetFile))
+
 
         glyphWidth = pixmap.width / columns
         glyphHeight = pixmap.height / rows

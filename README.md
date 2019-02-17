@@ -67,11 +67,13 @@ val kTerminalData = KTerminalData(
             defaultBackgroundColor = Color.BLACK.toFloatBits())
 
 val kTerminalRenderer = KTerminalRenderer(
-        batch = spriteBatch) // the spritebatch to be used in rendering
+        batch = spriteBatch // the spritebatch to be used in rendering
         tilesetFile = "fontSheetName.png", //the name of the font sheet
         columns = 16, // number of horizontal glyphs on the font sheet
         rows = 16, // number of vertical glyphs on the font sheet
-        scale = 1f // Between 0 and 1 to make it smaller, higher than 1 to make it bigger
+        scale = 1f) // Between 0 and 1 to make it smaller, higher than 1 to make it bigger
+
+val kTerminalRenderer = KTerminalRenderer(spriteBatch) // uses the default font sheet and settings.
         
         
 //glyphs can be set with a Char

@@ -147,8 +147,8 @@ class KTerminalRenderer(val batch: SpriteBatch,
                     throw IllegalArgumentException("glyph value [${glyph.value}] exceeds found glyph count [${(columns * rows) - 1}]")
                 } else {
                     batch.draw( glyphs[glyph.char.toInt()],
-                            x + (i * scaledGlyphWidth),
-                            y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
+                            x + (i * scaledGlyphWidth) + (glyph.offsetX * scaledGlyphWidth),
+                            y + ((kTerminalData.height - j - 1) * scaledGlyphHeight) + (glyph.offsetY * scaledGlyphHeight),
                             scaledGlyphWidth / 2,
                             scaledGlyphHeight / 2,
                             scaledGlyphWidth,

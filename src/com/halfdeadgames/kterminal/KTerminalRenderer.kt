@@ -1,10 +1,9 @@
-package com.halfdeadgames.kterminal
+package com.github.heatherhaks.kterminal.kterminal
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Disposable
@@ -127,7 +126,7 @@ class KTerminalRenderer(val batch: SpriteBatch,
 
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
-                batch.setColor(kTerminalData.terminal[i][j].backgroundColor)
+                batch.color = kTerminalData.terminal[i][j].backgroundColor
                 batch.draw( backgroundTexture,
                         x + (i * scaledGlyphWidth),
                         y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
@@ -138,7 +137,7 @@ class KTerminalRenderer(val batch: SpriteBatch,
 
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
-                batch.setColor(kTerminalData.terminal[i][j].foregroundColor)
+                batch.color = kTerminalData.terminal[i][j].foregroundColor
 
                 val glyph = kTerminalData.terminal[i][j]
                 val scaleX = if(glyph.isFlippedY) -glyph.scale else glyph.scale

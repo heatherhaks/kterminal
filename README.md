@@ -121,12 +121,15 @@ The following options can be set:
    //color
    kTerminalData[foreground, background] // libGdx Color objects
    kTerminalData.setCursorColor(foreground, background) // libGdx Color objects
-   kTerminalData.setCursorColor(foreground, background) // float bits in AGBR format 
-                                                         // (you can get this from a libgdx Color object using toFloatBits())
+   
    //glyph rotation and scale
    kTerminalData[rotation, scale]
    kTerminalData.setCursorRotation(rotation)
    kTerminalData.setCursorScale(scale)
+   
+   //glyph offsets, numbers are in relation to the width/height of the glyphs. so an offsetX of 1.5f
+   //would move a glyph one and a half times to the right
+   kTerminalData.setCursorOffset(offsetX, offsetY) //0f is no offset
    
    //glyph flipping
    kTerminalData[isFlippedX, isFlippedY]

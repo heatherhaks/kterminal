@@ -51,7 +51,7 @@ class KTerminalData(width: Int,
 
     inner class Cursor(x: Int, y: Int, foregroundColor: Color, backgroundColor: Color, rotation: Float, scale: Float, offsetX: Float, offsetY: Float, isFlippedX: Boolean, isFlippedY: Boolean) {
 
-        constructor() : this(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, 0f, 0f, isFlippedX = false, isFlippedY = false)
+        constructor() : this(0, 0, defaultForegroundColor.copy(), defaultBackgroundColor.copy(), 0f, 1f, 0f, 0f, isFlippedX = false, isFlippedY = false)
 
         var foregroundColor: Color
             set(value) { cursorGlyph.foregroundColor = value }
@@ -165,9 +165,13 @@ class KTerminalData(width: Int,
         return this
     }
 
-    fun setCursorOffset(x: Float, y: Float) {
+    fun setCursorOffset(x: Float, y: Float) : KTerminalData {
         cursor.offsetX = x
         cursor.offsetY = y
+        workingCursor.offsetX = x
+        workingCursor.offsetY = y
+
+        return this
     }
 
     fun setCursorFlip(isFlippedX: Boolean, isFlippedY: Boolean) : KTerminalData {
@@ -182,6 +186,11 @@ class KTerminalData(width: Int,
     //position brackets
     operator fun get(x: Int, y: Int) : KTerminalData {
         return setCursorPosition(x, y)
+    }
+
+    //position + offset brackets
+    operator fun get(x: Int, y: Int, offsetX: Float, offsetY: Float) : KTerminalData {
+        return setCursorPosition(x, y).setCursorOffset(offsetX, offsetY)
     }
 
     //color brackets, can't do floats because rotation and scale use floats
@@ -296,13 +305,51 @@ class KTerminalData(width: Int,
         }
     }
 
+    @JvmOverloads fun setSubCell(topLeftColor: Color,
+                                 topRightColor: Color,
+                                 bottomLeftColor: Color,
+                                 bottomRightColor: Color,
+                                 topLeftValue: Int = 257,
+                                 topRightValue: Int = 258,
+                                 bottomLeftValue: Int = 260,
+                                 bottomRightValue: Int = 259) {
+        terminal[workingCursor.x][workingCursor.y].apply {
+            this.isSubCellEnabled = true
+            this.subCellGlyph.topLeft.set(topLeftColor, topLeftValue)
+            this.subCellGlyph.topRight.set(topRightColor, topRightValue)
+            this.subCellGlyph.bottomLeft.set(bottomLeftColor, bottomLeftValue)
+            this.subCellGlyph.bottomRight.set(bottomRightColor, bottomRightValue)
+        }
+    }
+
+    fun setSubCell(subCellGlyph: SubCellGlyph) {
+        terminal[workingCursor.x][workingCursor.y].isSubCellEnabled = true
+        terminal[workingCursor.x][workingCursor.y].subCellGlyph = subCellGlyph
+    }
+
+    fun clearSubCell() {
+        terminal[workingCursor.x][workingCursor.y].isSubCellEnabled = false
+        terminal[workingCursor.x][workingCursor.y].subCellGlyph.reset()
+    }
+
     @JvmOverloads fun clear(width: Int = 1, height: Int = 1) {
         workingCursor.foregroundColor = defaultForegroundColor
         workingCursor.backgroundColor = defaultBackgroundColor
         workingCursor.rotation = 0f
         workingCursor.scale = 1f
 
+        val startX = workingCursor.x
+        val startY = workingCursor.y
+
         drawRect(width, height, 0, true)
+
+        for(x in startX until startX + width) {
+            for(y in startY until startY + height) {
+                workingCursor.x = x
+                workingCursor.y = y
+                clearSubCell()
+            }
+        }
     }
 
     fun clearAll() {

@@ -1,6 +1,7 @@
 package com.halfdeadgames.kterminal
 
 import com.badlogic.gdx.graphics.Color
+import ktx.graphics.copy
 
 data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
                           var foregroundColor: Color,
@@ -22,12 +23,31 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
                               isFlippedX: Boolean = false,
                               isFlippedY: Boolean = false) : this(char.toInt(), foregroundColor, backgroundColor, rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY)
 
+    @JvmOverloads constructor(topLeft: Color,
+                topRight: Color,
+                bottomLeft: Color,
+                bottomRight: Color,
+                rotation: Float = 0f,
+                scale: Float = 1f,
+                offsetX: Float = 0f,
+                offsetY: Float = 0f,
+                isFlippedX: Boolean = false,
+                isFlippedY: Boolean = false) : this(0, Color.CLEAR.copy(), Color.CLEAR.copy(), rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY) {
+        subCellGlyph.topLeft.color = topLeft
+        subCellGlyph.topRight.color = topRight
+        subCellGlyph.bottomLeft.color = bottomLeft
+        subCellGlyph.bottomRight.color = bottomRight
+        isSubCellEnabled = true
+    }
 
     var char: Char
         set(input) {
             value = input.toInt()
         }
         get() = value.toChar()
+
+    var isSubCellEnabled = false
+    var subCellGlyph = SubCellGlyph()
 
     @JvmOverloads fun set(value: Int, foregroundColor: Color, backgroundColor: Color, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         this.value = value
@@ -51,6 +71,9 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
     }
 
     fun copy() : KTerminalGlyph {
-        return KTerminalGlyph(value, foregroundColor, backgroundColor, rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY)
+        val output = KTerminalGlyph(value, foregroundColor, backgroundColor, rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY)
+        output.isSubCellEnabled = isSubCellEnabled
+        output.subCellGlyph = subCellGlyph.copy()
+        return output
     }
 }

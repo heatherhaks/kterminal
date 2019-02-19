@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Disposable
+import ktx.graphics.copy
 import java.nio.ByteBuffer
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -20,6 +21,8 @@ class KTerminalRenderer(val batch: SpriteBatch,
     private lateinit var glyphTexture: Texture
     private lateinit var glyphs: Array<TextureRegion?>
     private lateinit var backgroundTexture: Texture
+    private lateinit var backgroundTextureRegion: TextureRegion
+    private var glyphMaxSize: Float = 0f
 
     var glyphWidth: Int = 0
         private set
@@ -47,12 +50,14 @@ class KTerminalRenderer(val batch: SpriteBatch,
         glyphHeight = pixmap.height / rows
         scaledGlyphWidth = glyphWidth * scale
         scaledGlyphHeight = glyphHeight * scale
+        glyphMaxSize = Math.sqrt(((scaledGlyphWidth * scaledGlyphWidth) + (scaledGlyphHeight * scaledGlyphHeight)).toDouble()).toFloat()
 
         val resultPixmap = Pixmap(pixmap.width, pixmap.height, Pixmap.Format.RGBA8888)
         val whitePixmap = Pixmap(pixmap.width, pixmap.height, Pixmap.Format.RGBA8888)
         whitePixmap.setColor(Color.WHITE)
         whitePixmap.fill()
         backgroundTexture = Texture(whitePixmap)
+        backgroundTextureRegion = TextureRegion(backgroundTexture)
         whitePixmap.dispose()
         val buffer: ByteBuffer = pixmap.pixels
         val resultBuffer: ByteBuffer = resultPixmap.pixels
@@ -132,21 +137,40 @@ class KTerminalRenderer(val batch: SpriteBatch,
     fun render(x: Float, y: Float, kTerminalData: KTerminalData) {
         val originalColor = batch.color.cpy()
 
+        fun draw(textureRegion: TextureRegion?, glyphColor: Color, glyph: KTerminalGlyph, posX: Int, posY: Int, scaleX: Float, scaleY: Float) {
+            batch.color = glyphColor
+
+            batch.draw( textureRegion,
+                    x + (posX * scaledGlyphWidth) + (glyph.offsetX * scaledGlyphWidth),
+                    y + ((kTerminalData.height - posY - 1) * scaledGlyphHeight) + (-glyph.offsetY * scaledGlyphHeight),
+                    scaledGlyphWidth / 2,
+                    scaledGlyphHeight / 2,
+                    scaledGlyphWidth,
+                    scaledGlyphHeight,
+                    scaleX,
+                    scaleY,
+                    (-glyph.rotation + 90) % 360, //0 is no rotation, clockwise
+                    true)
+        }
+
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
-                batch.color = kTerminalData.terminal[i][j].backgroundColor
-                batch.draw( backgroundTexture,
-                        x + (i * scaledGlyphWidth),
-                        y + ((kTerminalData.height - j - 1) * scaledGlyphHeight),
-                        scaledGlyphWidth,
-                        scaledGlyphHeight)
+                when(kTerminalData.terminal[i][j].isSubCellEnabled) {
+                    true -> batch.color = Color.CLEAR
+                    false -> batch.color = kTerminalData.terminal[i][j].backgroundColor
+                }
+
+                val glyph = kTerminalData.terminal[i][j]
+                val scaleX = if(glyph.isFlippedY) -glyph.scale else glyph.scale
+                val scaleY = if(glyph.isFlippedX) -glyph.scale else glyph.scale
+
+                draw(TextureRegion(backgroundTexture), batch.color, glyph, i, j, scaleX, scaleY)
+
             }
         }
 
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
-                batch.color = kTerminalData.terminal[i][j].foregroundColor
-
                 val glyph = kTerminalData.terminal[i][j]
                 val scaleX = if(glyph.isFlippedY) -glyph.scale else glyph.scale
                 val scaleY = if(glyph.isFlippedX) -glyph.scale else glyph.scale
@@ -154,20 +178,26 @@ class KTerminalRenderer(val batch: SpriteBatch,
                 if(glyph.value >= columns * rows) {
                     throw IllegalArgumentException("glyph value [${glyph.value}] exceeds found glyph count [${(columns * rows) - 1}]")
                 } else {
-                    batch.draw( glyphs[glyph.char.toInt()],
-                            x + (i * scaledGlyphWidth) + (glyph.offsetX * scaledGlyphWidth),
-                            y + ((kTerminalData.height - j - 1) * scaledGlyphHeight) + (glyph.offsetY * scaledGlyphHeight),
-                            scaledGlyphWidth / 2,
-                            scaledGlyphHeight / 2,
-                            scaledGlyphWidth,
-                            scaledGlyphHeight,
-                            scaleX,
-                            scaleY,
-                            (-glyph.rotation + 90) % 360, //0 is no rotation, clockwise
-                            true)
+                    when(glyph.isSubCellEnabled) {
+                        true -> {
+                            val topLeft = glyph.subCellGlyph.topLeft
+                            val topRight = glyph.subCellGlyph.topRight
+                            val bottomLeft = glyph.subCellGlyph.bottomLeft
+                            val bottomRight = glyph.subCellGlyph.bottomRight
+
+                            draw(glyphs[topLeft.value], topLeft.color, glyph, i, j, scaleX, scaleY)
+                            draw(glyphs[topRight.value], topRight.color, glyph, i, j, scaleX, scaleY)
+                            draw(glyphs[bottomLeft.value], bottomLeft.color, glyph, i, j, scaleX, scaleY)
+                            draw(glyphs[bottomRight.value], bottomRight.color, glyph, i, j, scaleX, scaleY)
+                        }
+                        false -> {
+                            draw(glyphs[glyph.value], kTerminalData.terminal[i][j].foregroundColor, glyph, i, j, scaleX, scaleY)
+                        }
+                    }
                 }
             }
         }
+
         batch.color = originalColor
     }
 

@@ -122,9 +122,30 @@ The following options can be set:
    kTerminalData[x, y]
    kTerminal.setCursorPosition(x, y)
    
+   //position and offset
+   kTerminalData[x, y, offsetX, offsetY]
+   kTerminal.setCursorPosition(x, y)
+   kTerminal.setCursorOffset(offsetX, offsetY)
+   
    //color
    kTerminalData[foreground, background] // libGdx Color objects
    kTerminalData.setCursorColor(foreground, background) // libGdx Color objects
+   
+   //sub-cell resolution, requires specific sub-cell drawing glyphs, defaults to the locations shown in the included font sheet
+   //in spaces 257-260 (numbering starts at 0)
+   kTerminalData.setSubCell(topLeftColor,
+                            topRightColor,
+                            bottomLeftColor,
+                            bottomRightColor,
+                            topLeftValue, //defaults to value 257
+                            topRightValue, // defaults to value 258
+                            bottomLeftValue, // defaults to value 260
+                            bottomRightValue) // defaults to value 259
+    kTerminalData.setSubCell(subCellGlyph.copy()) // it can take a preconfigured SubCellGlyph object
+                                                  // You might want to use a copy since clearing the
+                                                  // terminal or the sub cell will change the object
+                                                  // provided to this function
+    kTerminalData.clearSubCell() // clears a sub-cell at the current cursor location
    
    //glyph rotation and scale
    kTerminalData[rotation, scale]

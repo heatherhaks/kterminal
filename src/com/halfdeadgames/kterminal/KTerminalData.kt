@@ -6,13 +6,12 @@ import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotEllipse
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotLine
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotRect
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotTriangle
-import ktx.graphics.copy
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class KTerminalData(width: Int,
                     height: Int,
-                    var defaultForegroundColor: Color = Color.WHITE.copy(),
-                    var defaultBackgroundColor: Color = Color.BLACK.copy()
+                    var defaultForegroundColor: Float = Color.WHITE.toFloatBits(),
+                    var defaultBackgroundColor: Float = Color.BLACK.toFloatBits()
 ) {
     var width: Int = width
         set(value) {
@@ -49,14 +48,14 @@ class KTerminalData(width: Int,
         }
     }
 
-    inner class Cursor(x: Int, y: Int, foregroundColor: Color, backgroundColor: Color, rotation: Float, scale: Float, offsetX: Float, offsetY: Float, isFlippedX: Boolean, isFlippedY: Boolean) {
+    inner class Cursor(x: Int, y: Int, foregroundColor: Float, backgroundColor: Float, rotation: Float, scale: Float, offsetX: Float, offsetY: Float, isFlippedX: Boolean, isFlippedY: Boolean) {
 
-        constructor() : this(0, 0, defaultForegroundColor.copy(), defaultBackgroundColor.copy(), 0f, 1f, 0f, 0f, isFlippedX = false, isFlippedY = false)
+        constructor() : this(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, 0f, 0f, isFlippedX = false, isFlippedY = false)
 
-        var foregroundColor: Color
+        var foregroundColor: Float
             set(value) { cursorGlyph.foregroundColor = value }
             get() = cursorGlyph.foregroundColor
-        var backgroundColor: Color
+        var backgroundColor: Float
             set(value) { cursorGlyph.backgroundColor = value }
             get() = cursorGlyph.backgroundColor
         var rotation: Float
@@ -105,7 +104,7 @@ class KTerminalData(width: Int,
                 field = clampCursor(value, height)
             }
 
-        fun set(x: Int, y: Int, foregroundColor: Color, backgroundColor: Color, rotation: Float, scale: Float, offsetX: Float, offsetY: Float, isFlippedX: Boolean, isFlippedY: Boolean) {
+        fun set(x: Int, y: Int, foregroundColor: Float, backgroundColor: Float, rotation: Float, scale: Float, offsetX: Float, offsetY: Float, isFlippedX: Boolean, isFlippedY: Boolean) {
             this.x = x
             this.y = y
 
@@ -125,7 +124,7 @@ class KTerminalData(width: Int,
     private val cursor: Cursor = Cursor()
     private val workingCursor: Cursor = Cursor()
 
-    @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Color = defaultForegroundColor, backgroundColor: Color = defaultBackgroundColor, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
+    @JvmOverloads fun setCursor(x: Int = 0, y: Int = 0, foregroundColor: Float = defaultForegroundColor, backgroundColor: Float = defaultBackgroundColor, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         cursor.set(x, y, foregroundColor, backgroundColor, rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY)
         workingCursor.set(cursor)
     }
@@ -142,13 +141,17 @@ class KTerminalData(width: Int,
         return this
     }
 
-    fun setCursorColor(foregroundColor: Color, backgroundColor: Color) : KTerminalData {
+    fun setCursorColor(foregroundColor: Float, backgroundColor: Float) : KTerminalData {
         cursor.foregroundColor = foregroundColor
         cursor.backgroundColor = backgroundColor
 
         workingCursor.foregroundColor = foregroundColor
         workingCursor.backgroundColor = backgroundColor
         return this
+    }
+
+    fun setCursorColor(foregroundColor: Color, backgroundColor: Color) : KTerminalData {
+        return setCursorColor(foregroundColor.toFloatBits(), backgroundColor.toFloatBits())
     }
 
     fun setCursorScale(scale: Float) : KTerminalData {
@@ -305,10 +308,10 @@ class KTerminalData(width: Int,
         }
     }
 
-    @JvmOverloads fun setSubCell(topLeftColor: Color,
-                                 topRightColor: Color,
-                                 bottomLeftColor: Color,
-                                 bottomRightColor: Color,
+    @JvmOverloads fun setSubCell(topLeftColor: Float = defaultBackgroundColor,
+                                 topRightColor: Float = defaultBackgroundColor,
+                                 bottomLeftColor: Float = defaultBackgroundColor,
+                                 bottomRightColor: Float = defaultBackgroundColor,
                                  topLeftValue: Int = 257,
                                  topRightValue: Int = 258,
                                  bottomLeftValue: Int = 260,
@@ -320,6 +323,24 @@ class KTerminalData(width: Int,
             this.subCellGlyph.bottomLeft.set(bottomLeftColor, bottomLeftValue)
             this.subCellGlyph.bottomRight.set(bottomRightColor, bottomRightValue)
         }
+    }
+
+    fun setSubCell(topLeftColor: Color,
+                   topRightColor: Color,
+                   bottomLeftColor: Color,
+                   bottomRightColor: Color,
+                   topLeftValue: Int = 257,
+                   topRightValue: Int = 258,
+                   bottomLeftValue: Int = 260,
+                   bottomRightValue: Int = 259) {
+        setSubCell(topLeftColor.toFloatBits(),
+                topRightColor.toFloatBits(),
+                bottomLeftColor.toFloatBits(),
+                bottomRightColor.toFloatBits(),
+                topLeftValue,
+                topRightValue,
+                bottomLeftValue,
+                bottomRightValue)
     }
 
     fun setSubCell(subCellGlyph: SubCellGlyph) {
@@ -357,7 +378,7 @@ class KTerminalData(width: Int,
         clear(width, height)
     }
 
-    private fun fillShape(shapeList: List<Pair<Int, Int>>, value: Int, foregroundColor: Color, backgroundColor: Color) {
+    private fun fillShape(shapeList: List<Pair<Int, Int>>, value: Int, foregroundColor: Float, backgroundColor: Float) {
         val shapeListSorted = shapeList.sortedWith(compareBy<Pair<Int, Int>>{it.second}.thenBy { it.first })
 
         val firstY = shapeListSorted.first().second
@@ -394,8 +415,8 @@ class KTerminalData(width: Int,
                  char: Char = ' ',
                  isFilled: Boolean = false,
                  fillChar: Char = char,
-                 fillForeground: Color,
-                 fillBackground: Color) {
+                 fillForeground: Float,
+                 fillBackground: Float) {
         drawRect(width, height, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
@@ -404,8 +425,8 @@ class KTerminalData(width: Int,
                                value: Int,
                                isFilled: Boolean = false,
                                fillValue: Int = value,
-                               fillForeground: Color = cursor.foregroundColor,
-                               fillBackground: Color = cursor.backgroundColor) {
+                               fillForeground: Float = cursor.foregroundColor,
+                               fillBackground: Float = cursor.backgroundColor) {
         val plotList = plotRect(cursor.x, cursor.y, width, height)
 
         drawShape(plotList, value)
@@ -425,8 +446,8 @@ class KTerminalData(width: Int,
                                   char: Char,
                                   isFilled: Boolean = false,
                                   fillChar: Char = ' ',
-                                  fillForeground: Color = cursor.foregroundColor,
-                                  fillBackground: Color = cursor.backgroundColor) {
+                                  fillForeground: Float = cursor.foregroundColor,
+                                  fillBackground: Float = cursor.backgroundColor) {
         drawEllipse(width, height, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
@@ -435,8 +456,8 @@ class KTerminalData(width: Int,
                                   value: Int,
                                   isFilled: Boolean = false,
                                   fillValue: Int = value,
-                                  fillForeground: Color = cursor.foregroundColor,
-                                  fillBackground: Color = cursor.backgroundColor) {
+                                  fillForeground: Float = cursor.foregroundColor,
+                                  fillBackground: Float = cursor.backgroundColor) {
         val ellipsePlot = plotEllipse(cursor.x, cursor.y, cursor.x + width, cursor.y + height)
 
         drawShape(ellipsePlot, value)
@@ -447,8 +468,8 @@ class KTerminalData(width: Int,
                                  char: Char,
                                  isFilled: Boolean = false,
                                  fillChar: Char = char,
-                                 fillForeground: Color = cursor.foregroundColor,
-                                 fillBackground: Color = cursor.backgroundColor) {
+                                 fillForeground: Float = cursor.foregroundColor,
+                                 fillBackground: Float = cursor.backgroundColor) {
         drawCircle(radius, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
@@ -456,8 +477,8 @@ class KTerminalData(width: Int,
                                  value: Int,
                                  isFilled: Boolean = false,
                                  fillValue: Int = value,
-                                 fillForeground: Color = cursor.foregroundColor,
-                                 fillBackground: Color = cursor.backgroundColor) {
+                                 fillForeground: Float = cursor.foregroundColor,
+                                 fillBackground: Float = cursor.backgroundColor) {
         val circlePlot = plotCircle(cursor.x, cursor.y, radius)
 
         drawShape(circlePlot, value)
@@ -471,8 +492,8 @@ class KTerminalData(width: Int,
                                    char: Char,
                                    isFilled: Boolean = false,
                                    fillChar: Char = char,
-                                   fillForeground: Color = cursor.foregroundColor,
-                                   fillBackground: Color = cursor.backgroundColor) {
+                                   fillForeground: Float = cursor.foregroundColor,
+                                   fillBackground: Float = cursor.backgroundColor) {
         drawTriangle(leftX, leftY, rightX, rightY, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
@@ -483,8 +504,8 @@ class KTerminalData(width: Int,
                                    value: Int,
                                    isFilled: Boolean = false,
                                    fillValue: Int = value,
-                                   fillForeground: Color = cursor.foregroundColor,
-                                   fillBackground: Color = cursor.backgroundColor) {
+                                   fillForeground: Float = cursor.foregroundColor,
+                                   fillBackground: Float = cursor.backgroundColor) {
         val trianglePlot = plotTriangle(cursor.x, cursor.y, leftX, leftY, rightX, rightY)
 
         drawShape(trianglePlot, value)
@@ -501,8 +522,8 @@ class KTerminalData(width: Int,
                               vertical: Char,
                               isFilled: Boolean = false,
                               fillChar: Char = ' ',
-                              fillForeground: Color = cursor.foregroundColor,
-                              fillBackground: Color = cursor.backgroundColor) {
+                              fillForeground: Float = cursor.foregroundColor,
+                              fillBackground: Float = cursor.backgroundColor) {
         drawBox(width, height, topLeft.toInt(), topRight.toInt(), bottomLeft.toInt(), bottomRight.toInt(),
                 horizontal.toInt(), vertical.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
@@ -517,8 +538,8 @@ class KTerminalData(width: Int,
                               vertical: Int,
                               isFilled: Boolean = false,
                               fillValue: Int = 0,
-                              fillForeground: Color = cursor.foregroundColor,
-                              fillBackground: Color = cursor.backgroundColor) {
+                              fillForeground: Float = cursor.foregroundColor,
+                              fillBackground: Float = cursor.backgroundColor) {
         val plotList = plotRect(cursor.x, cursor.y, width, height)
 
         plotList.forEach {
@@ -549,8 +570,8 @@ class KTerminalData(width: Int,
                                     height: Int,
                                     isFilled: Boolean,
                                     fillChar: Char,
-                                    fillForeground: Color = cursor.foregroundColor,
-                                    fillBackground: Color = cursor.backgroundColor) {
+                                    fillForeground: Float = cursor.foregroundColor,
+                                    fillBackground: Float = cursor.backgroundColor) {
         drawDoubleBox(width, height, isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
@@ -558,8 +579,8 @@ class KTerminalData(width: Int,
                                     height: Int,
                                     isFilled: Boolean = false,
                                     fillValue: Int = 0,
-                                    fillForeground: Color = cursor.foregroundColor,
-                                    fillBackground: Color = cursor.backgroundColor) {
+                                    fillForeground: Float = cursor.foregroundColor,
+                                    fillBackground: Float = cursor.backgroundColor) {
         drawBox(width, height,
                 KTerminalData.BOX_DOUBLE_DOWN_RIGHT,
                 KTerminalData.BOX_DOUBLE_DOWN_LEFT,
@@ -583,8 +604,8 @@ class KTerminalData(width: Int,
                                     height: Int,
                                     isFilled: Boolean = false,
                                     fillValue: Int = 0,
-                                    fillForeground: Color = cursor.foregroundColor,
-                                    fillBackground: Color = cursor.backgroundColor) {
+                                    fillForeground: Float = cursor.foregroundColor,
+                                    fillBackground: Float = cursor.backgroundColor) {
         drawBox(width, height,
                 KTerminalData.BOX_SINGLE_DOWN_RIGHT,
                 KTerminalData.BOX_SINGLE_DOWN_LEFT,

@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Disposable
-import ktx.graphics.copy
 import java.nio.ByteBuffer
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -135,10 +134,10 @@ class KTerminalRenderer(val batch: SpriteBatch,
     }
 
     fun render(x: Float, y: Float, kTerminalData: KTerminalData) {
-        val originalColor = batch.color.cpy()
+        val originalColor = batch.packedColor
 
-        fun draw(textureRegion: TextureRegion?, glyphColor: Color, glyph: KTerminalGlyph, posX: Int, posY: Int, scaleX: Float, scaleY: Float) {
-            batch.color = glyphColor
+        fun draw(textureRegion: TextureRegion?, glyphColor: Float, glyph: KTerminalGlyph, posX: Int, posY: Int, scaleX: Float, scaleY: Float) {
+            batch.packedColor = glyphColor
 
             batch.draw( textureRegion,
                     x + (posX * scaledGlyphWidth) + (glyph.offsetX * scaledGlyphWidth),
@@ -155,16 +154,16 @@ class KTerminalRenderer(val batch: SpriteBatch,
 
         for(j in 0 until kTerminalData.height) {
             for(i in 0 until kTerminalData.width) {
-                when(kTerminalData.terminal[i][j].isSubCellEnabled) {
-                    true -> batch.color = Color.CLEAR
-                    false -> batch.color = kTerminalData.terminal[i][j].backgroundColor
+                val drawColor = when(kTerminalData.terminal[i][j].isSubCellEnabled) {
+                    true -> Color.CLEAR.toFloatBits()
+                    false -> kTerminalData.terminal[i][j].backgroundColor
                 }
 
                 val glyph = kTerminalData.terminal[i][j]
                 val scaleX = if(glyph.isFlippedY) -glyph.scale else glyph.scale
                 val scaleY = if(glyph.isFlippedX) -glyph.scale else glyph.scale
 
-                draw(TextureRegion(backgroundTexture), batch.color, glyph, i, j, scaleX, scaleY)
+                draw(TextureRegion(backgroundTexture), drawColor, glyph, i, j, scaleX, scaleY)
 
             }
         }
@@ -195,7 +194,7 @@ class KTerminalRenderer(val batch: SpriteBatch,
             }
         }
 
-        batch.color = originalColor
+        batch.packedColor = originalColor
     }
 
     override fun dispose() {

@@ -1,7 +1,6 @@
 package com.halfdeadgames.kterminal
 
 import com.badlogic.gdx.graphics.Color
-import ktx.graphics.copy
 
 
 class SubCellGlyph() {
@@ -13,7 +12,7 @@ class SubCellGlyph() {
         this.bottomRight = bottomRight
     }
 
-    var resetColor: Color = Color.CLEAR.copy()
+    var resetColor = Color.CLEAR.toFloatBits()
     var defaultTopLeftValue = 257
     var defaultTopRightValue = 258
     var defaultBottomLeftValue = 260
@@ -24,14 +23,14 @@ class SubCellGlyph() {
     var bottomLeft: SubCellData = SubCellData(resetColor, defaultBottomLeftValue)
     var bottomRight: SubCellData = SubCellData(resetColor, defaultBottomRightValue)
 
-    inner class SubCellData(var color: Color = Color.CLEAR.copy(), var value: Int = 0) {
-        fun set(color: Color, value: Int) {
+    inner class SubCellData(var color: Float = Color.CLEAR.toFloatBits(), var value: Int = 0) {
+        fun set(color: Float, value: Int) {
             this.color = color
             this.value = value
         }
 
         fun copy() : SubCellData {
-            return SubCellData(color.copy(), value)
+            return SubCellData(color, value)
         }
     }
 
@@ -45,7 +44,7 @@ class SubCellGlyph() {
     fun copy() : SubCellGlyph {
         val output = SubCellGlyph(topLeft.copy(), topRight.copy(), bottomLeft.copy(), bottomRight.copy())
 
-        output.resetColor = resetColor.copy()
+        output.resetColor = resetColor
         output.defaultTopLeftValue = defaultTopLeftValue
         output.defaultTopRightValue = defaultTopRightValue
         output.defaultBottomLeftValue = defaultBottomLeftValue

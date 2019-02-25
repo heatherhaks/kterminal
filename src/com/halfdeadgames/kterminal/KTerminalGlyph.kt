@@ -1,11 +1,10 @@
 package com.halfdeadgames.kterminal
 
 import com.badlogic.gdx.graphics.Color
-import ktx.graphics.copy
 
 data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
-                          var foregroundColor: Color,
-                          var backgroundColor: Color,
+                          var foregroundColor: Float,
+                          var backgroundColor: Float,
                           var rotation: Float = 0f,
                           var scale: Float = 1f,
                           var offsetX: Float = 0f,
@@ -14,8 +13,8 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
                           var isFlippedY: Boolean = false) {
 
     @JvmOverloads constructor(char: Char,
-                              foregroundColor: Color,
-                              backgroundColor: Color,
+                              foregroundColor: Float,
+                              backgroundColor: Float,
                               rotation: Float = 0f,
                               scale: Float = 1f,
                               offsetX: Float = 0f,
@@ -23,20 +22,20 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
                               isFlippedX: Boolean = false,
                               isFlippedY: Boolean = false) : this(char.toInt(), foregroundColor, backgroundColor, rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY)
 
-    @JvmOverloads constructor(topLeft: Color,
-                topRight: Color,
-                bottomLeft: Color,
-                bottomRight: Color,
+    @JvmOverloads constructor(topLeftColor: Float,
+                topRightColor: Float,
+                bottomLeftColor: Float,
+                bottomRightColor: Float,
                 rotation: Float = 0f,
                 scale: Float = 1f,
                 offsetX: Float = 0f,
                 offsetY: Float = 0f,
                 isFlippedX: Boolean = false,
-                isFlippedY: Boolean = false) : this(0, Color.CLEAR.copy(), Color.CLEAR.copy(), rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY) {
-        subCellGlyph.topLeft.color = topLeft
-        subCellGlyph.topRight.color = topRight
-        subCellGlyph.bottomLeft.color = bottomLeft
-        subCellGlyph.bottomRight.color = bottomRight
+                isFlippedY: Boolean = false) : this(0, Color.CLEAR.toFloatBits(), Color.CLEAR.toFloatBits(), rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY) {
+        subCellGlyph.topLeft.color = topLeftColor
+        subCellGlyph.topRight.color = topRightColor
+        subCellGlyph.bottomLeft.color = bottomLeftColor
+        subCellGlyph.bottomRight.color = bottomRightColor
         isSubCellEnabled = true
     }
 
@@ -49,7 +48,7 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
     var isSubCellEnabled = false
     var subCellGlyph = SubCellGlyph()
 
-    @JvmOverloads fun set(value: Int, foregroundColor: Color, backgroundColor: Color, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
+    @JvmOverloads fun set(value: Int, foregroundColor: Float, backgroundColor: Float, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         this.value = value
         this.foregroundColor = foregroundColor
         this.backgroundColor = backgroundColor
@@ -61,7 +60,7 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
         this.isFlippedY = isFlippedY
     }
 
-    @JvmOverloads fun set(char: Char, foregroundColor: Color, backgroundColor: Color, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
+    @JvmOverloads fun set(char: Char, foregroundColor: Float, backgroundColor: Float, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
         set(char.toInt(), foregroundColor, backgroundColor, rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY)
     }
 

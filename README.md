@@ -79,8 +79,8 @@ val kTerminalRenderer = KTerminalRenderer(spriteBatch) // uses the default font 
 //glyphs can be set with a Char
 val exampleGlyph(
         char = '@', // stored internally as the Int 64
-        foreground = Color.YELLOW,
-        background = Color.BLACK,
+        foreground = Color.YELLOW.toFloatBits(),
+        background = Color.BLACK.toFloatBits(),
         rotation = 45f,
         scale = 0.5f,
         isFlippedX = true,
@@ -89,8 +89,8 @@ val exampleGlyph(
 //glyphs can be set with an Int
 val exampleGlyph(
         value = 64, //64's char value is @
-        foreground = Color.YELLOW,
-        background = Color.BLACK,
+        foreground = Color.YELLOW.toFloatBits(),
+        background = Color.BLACK.toFloatBits(),
         rotation = 45f,
         scale = 0.5f,
         isFlippedX = true,
@@ -129,7 +129,7 @@ The following options can be set:
    
    //color
    kTerminalData[foreground, background] // libGdx Color objects
-   kTerminalData.setCursorColor(foreground, background) // libGdx Color objects
+   kTerminalData.setCursorColor(foreground, background) // libGdx Color objects' float bits
    
    //sub-cell resolution, requires specific sub-cell drawing glyphs, defaults to the locations shown in the included font sheet
    //in spaces 257-260 (numbering starts at 0)

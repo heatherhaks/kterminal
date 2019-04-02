@@ -35,12 +35,15 @@ class KTerminalRenderer(val batch: SpriteBatch,
     }
 
     private fun init(tilesetFile: String?, scale: Float = 1f) {
-        val tempTilesetFile = tilesetFile ?: "defaultKTerminalFontSheet.png"
-
         if(tilesetFile == null) {
             columns = 16
             rows = 17
         }
+
+        val tempTilesetFile = tilesetFile ?: "defaultKTerminalFontSheet.png"
+
+        println(tempTilesetFile)
+
 
         val pixmap = Pixmap(Gdx.files.internal(tempTilesetFile))
 
@@ -174,19 +177,23 @@ class KTerminalRenderer(val batch: SpriteBatch,
                 val scaleX = if(glyph.isFlippedY) -glyph.scale else glyph.scale
                 val scaleY = if(glyph.isFlippedX) -glyph.scale else glyph.scale
 
-                if(glyph.isSubCellEnabled) {
-                    val topLeft = glyph.subCellGlyph.topLeft
-                    val topRight = glyph.subCellGlyph.topRight
-                    val bottomLeft = glyph.subCellGlyph.bottomLeft
-                    val bottomRight = glyph.subCellGlyph.bottomRight
+                if(glyph.value >= columns * rows) {
+                    throw IllegalArgumentException("glyph value [${glyph.value}] exceeds found glyph count [${(columns * rows) - 1}]")
+                } else {
+                    if(glyph.isSubCellEnabled) {
+                        val topLeft = glyph.subCellGlyph.topLeft
+                        val topRight = glyph.subCellGlyph.topRight
+                        val bottomLeft = glyph.subCellGlyph.bottomLeft
+                        val bottomRight = glyph.subCellGlyph.bottomRight
 
-                    draw(glyphs[topLeft.value], topLeft.color, glyph, i, j, scaleX, scaleY)
-                    draw(glyphs[topRight.value], topRight.color, glyph, i, j, scaleX, scaleY)
-                    draw(glyphs[bottomLeft.value], bottomLeft.color, glyph, i, j, scaleX, scaleY)
-                    draw(glyphs[bottomRight.value], bottomRight.color, glyph, i, j, scaleX, scaleY)
+                        draw(glyphs[topLeft.value], topLeft.color, glyph, i, j, scaleX, scaleY)
+                        draw(glyphs[topRight.value], topRight.color, glyph, i, j, scaleX, scaleY)
+                        draw(glyphs[bottomLeft.value], bottomLeft.color, glyph, i, j, scaleX, scaleY)
+                        draw(glyphs[bottomRight.value], bottomRight.color, glyph, i, j, scaleX, scaleY)
+                    }
+
+                    draw(glyphs[glyph.value], kTerminalData.terminal[i][j].foregroundColor, glyph, i, j, scaleX, scaleY)
                 }
-
-                draw(glyphs[glyph.value], kTerminalData.terminal[i][j].foregroundColor, glyph, i, j, scaleX, scaleY)
             }
         }
 

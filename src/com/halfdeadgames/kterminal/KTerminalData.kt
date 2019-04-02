@@ -33,7 +33,7 @@ class KTerminalData(width: Int,
 
     var terminal = Array(width) {
         Array(height) {
-            KTerminalGlyph(' ', defaultForegroundColor, defaultBackgroundColor)
+            KTerminalGlyph(0, defaultForegroundColor, defaultBackgroundColor)
         }
     }
 
@@ -44,7 +44,7 @@ class KTerminalData(width: Int,
 
         terminal = Array(width) {
             Array(height) {
-                KTerminalGlyph(' ', defaultForegroundColor, defaultBackgroundColor)
+                KTerminalGlyph(0, defaultForegroundColor, defaultBackgroundColor)
             }
         }
     }

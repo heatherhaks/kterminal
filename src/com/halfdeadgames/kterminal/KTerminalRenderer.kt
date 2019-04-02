@@ -42,8 +42,6 @@ class KTerminalRenderer(val batch: SpriteBatch,
 
         val tempTilesetFile = tilesetFile ?: "defaultKTerminalFontSheet.png"
 
-        println(tempTilesetFile)
-
 
         val pixmap = Pixmap(Gdx.files.internal(tempTilesetFile))
 

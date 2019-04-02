@@ -19,6 +19,11 @@ apply plugin: 'kotlin'
 apply plugin: "maven-publish"
 group = 'com.halfdeadgames'
 
+repositories {
+    // this repo should be available in every subproject that uses kotlin
+    mavenCentral() // or jcentrer
+}
+
 sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').absolutePath ]

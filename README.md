@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/heatherhaks/kterminal.svg)](https://jitpack.io/#heatherhaks/kterminal)
+
 # KTerminal
 
 KTerminal is a terminal display emulator written in [Kotlin](https://kotlinlang.org/) using [libGDX](http://libgdx.badlogicgames.com/) and [libKTX](https://libktx.github.io/). It was inspired by [AsciiTerminal](https://github.com/julianmaster/AsciiTerminal).

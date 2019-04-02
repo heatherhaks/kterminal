@@ -8,6 +8,7 @@ The goal of this project was to make an efficient, small way to emulate a termin
 
 - Supports any rectangular font sheet made of glyphs of the same size, with no borders around the glyphs. Glyphs do not have to be square. In order for string and char writing to work properly a 256 Extended Ascii ([IBM Code Page 437](https://en.wikipedia.org/wiki/Code_page_437)) font sheet must be used in the formats shown in the example font sheets. Dwarf Fortress font sheets are compatible. Font sheets can contain any glyph and doesn't have to conform to the above mentioned standard, and can contain more than the 256 possible glyphs in said standard.
 - Full color support for each glyph, including foreground color, background color, and transparency.
+- Writing Int, Char, and String. String writing also has a markup language to change color mid-write.
 - Vertical and horizontal flipping, rotation, and scaling of each glyph
 - Glyph offsets, meaning that glyphs are not confined to the center of their cell. This allows for smooth to move glyphs from cell to cell.
 - Includes a default font sheet, located here in the sources in the assets folder if you want to use it to make your own.
@@ -19,7 +20,7 @@ Here are two font sheets. Glyphs must be in the order shown in order for string 
 
 ![irregular layout](https://i.imgur.com/lSbFY2n.png)
 
-## Example Project
+## Example Project (this is old, working on new example currently)
 Here's an [example project](https://github.com/heatherhaks/KTerminalColorPicker/) showing off the features of KTerminal.
 
 ![screenshot](https://i.imgur.com/p7YSawF.gif)
@@ -64,7 +65,11 @@ val kTerminalData = KTerminalData(
             width = 33, // width in characters
             height = 20, // height in characters
             defaultForegroundColor = Color.WHITE.toFloatBits(),
-            defaultBackgroundColor = Color.BLACK.toFloatBits())
+            defaultBackgroundColor = Color.BLACK.toFloatBits(),
+            customColorMap = mapOf<String, Color>("DEFAULT" to Color.WHITE.cpy())) //a map of the desired 
+                                                                                   //markup tag as a string
+                                                                                   //and the custom color to
+                                                                                   //match the tag
 
 val kTerminalRenderer = KTerminalRenderer(
         batch = spriteBatch // the spritebatch to be used in rendering
@@ -192,8 +197,15 @@ kTerminalData.write(28)
     //KTerminalData.WRAP_NO_SHIFT // will wrap on same line
     //KTerminalData.WRAP_POSITIVE_SHIFT // x or y will increase on wrap depending on writing direction
     //KTerminalsData.WRAP_NEGATIVE_SHIFT //x or y will increase on wrap depending on writing direction
-KTerminalData.write("Example")
+kTerminalData.write("Example")
 kTerminalData.write("Example", direction = KTerminalData.WRITE_RIGHT_TO_LEFT, wrapping = KTerminalData.WRAP_POSITIVE_SHIFT)
+
+//markup use
+//You can use markup to change color mid-string writing. Tags are strings that go between square brackets.
+//Check KTerminalColor for the pre-defined ones, or make your own map of custom colors and pass it to
+//KTerminalData when you initialize it.
+kTerminalData.write("This [YELLOW]is an [BLUE]example")
+
 ```
 
 ### Shape Drawing

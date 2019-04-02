@@ -11,7 +11,8 @@ import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotTriangle
 class KTerminalData(width: Int,
                     height: Int,
                     var defaultForegroundColor: Float = Color.WHITE.toFloatBits(),
-                    var defaultBackgroundColor: Float = Color.BLACK.toFloatBits()
+                    var defaultBackgroundColor: Float = Color.BLACK.toFloatBits(),
+                    val customColorMap: Map<String, Color>? = null
 ) {
     var width: Int = width
         set(value) {
@@ -245,7 +246,58 @@ class KTerminalData(width: Int,
         write(char.toInt())
     }
 
-    @JvmOverloads fun write(string: String, direction: Int = WRITE_LEFT_TO_RIGHT, wrapping: Int = WRAP_NONE) {
+    @Suppress("LocalVariableName")
+    private tailrec fun recursiveTagExtractor(input: String,
+                                              tagMap: MutableMap<Int, String>,
+                                              position: Int = 0,
+                                              inTag: Boolean = false,
+                                              output: String = "",
+                                              tagPosition: Int = -1,
+                                              offsetPosition: Int = 0) : String {
+        val STARTING_CHAR = '['
+        val ENDING_CHAR = ']'
+        val ESCAPE_CHAR = '\\'
+
+        var tagging: Boolean = inTag
+        var tagPos = tagPosition
+        var outputString = output
+        var offsetPos = offsetPosition
+
+        fun isStartingChar(pos: Int = position) : Boolean = input[pos] == STARTING_CHAR
+
+        fun isEscapeChar(pos: Int = position) : Boolean = input[pos] == ESCAPE_CHAR
+
+        fun isEndingChar(pos: Int = position) : Boolean = input[pos] == ENDING_CHAR
+
+        fun isEscaped(pos:Int = position) : Boolean = (pos == 0 && (isEscapeChar(pos)))
+                || (pos > 0 && isEscapeChar(pos) && !isEscapeChar(pos - 1))
+
+
+        if(!tagging && (isStartingChar() && !isEscaped(2))) {
+            tagging = true
+            tagPos = offsetPos
+        } else if(tagging && isEndingChar( position - 1) && !isEscaped(position - 1)) {
+            tagging = false
+            tagPos = -1
+        }
+
+        val inputCharString = "${input[position]}"
+
+        if(!isEscaped()) {
+            when(tagging) {
+                true -> tagMap[tagPos] = if(tagMap[tagPos].isNullOrEmpty()) inputCharString else  tagMap[tagPos] + inputCharString
+                false ->  {
+                    outputString += if(tagMap[-1].isNullOrEmpty()) inputCharString else  tagMap[-1] + inputCharString
+                    offsetPos++
+                }
+            }
+        }
+
+        return if(position + 1 >= input.length) outputString
+            else recursiveTagExtractor(input, tagMap, position + 1, tagging, outputString, tagPos, offsetPos)
+    }
+
+    @JvmOverloads fun write(string: String, hasMarkup: Boolean = false, direction: Int = WRITE_LEFT_TO_RIGHT, wrapping: Int = WRAP_NONE) {
         var posX = cursor.x
         var posY = cursor.y
         var isWriting = true
@@ -276,11 +328,24 @@ class KTerminalData(width: Int,
             return Pair(tempWritingPos, tempAlignPos)
         }
 
+        val tagMap = mutableMapOf<Int, String>()
+        val workingString = if(hasMarkup) recursiveTagExtractor(string, tagMap) else string
+        var writingColor = workingCursor.foregroundColor
 
-
-        string.toCharArray().forEach {
+        workingString.toCharArray().forEachIndexed { i, it ->
             if(isWriting) {
                 workingCursor.set(posX, posY)
+
+                if(hasMarkup && tagMap[i] != null) {
+                    val tagString = tagMap.getValue(i).removePrefix("[").removeSuffix("]")
+                    if(customColorMap != null && customColorMap[tagString] != null) {
+                        writingColor = customColorMap.getValue(tagString).toFloatBits()
+                    } else if(KTerminalColor.colorMap[tagString] != null)  {
+                        writingColor = KTerminalColor.colorMap.getValue(tagString).toFloatBits()
+                    }
+
+                }
+                workingCursor.foregroundColor = writingColor
                 write(it)
 
                 when(direction) {

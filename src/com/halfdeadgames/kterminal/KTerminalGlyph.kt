@@ -2,9 +2,9 @@ package com.halfdeadgames.kterminal
 
 import com.badlogic.gdx.graphics.Color
 
-data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
-                          var foregroundColor: Float,
-                          var backgroundColor: Float,
+data class KTerminalGlyph @JvmOverloads constructor(var value: Int = 0,
+                          var foregroundColor: Float = Color.CLEAR.toFloatBits(),
+                          var backgroundColor: Float = Color.CLEAR.toFloatBits(),
                           var rotation: Float = 0f,
                           var scale: Float = 1f,
                           var offsetX: Float = 0f,
@@ -74,5 +74,9 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int,
         output.isSubCellEnabled = isSubCellEnabled
         output.subCellGlyph = subCellGlyph.copy()
         return output
+    }
+  
+    fun reset() {
+        set(0, Color.CLEAR.toIntBits(), Color.CLEAR.toIntBits())
     }
 }

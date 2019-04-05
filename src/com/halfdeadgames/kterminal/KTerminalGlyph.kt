@@ -77,6 +77,16 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int = 0,
     }
   
     fun reset() {
-        set(0, Color.CLEAR.toIntBits(), Color.CLEAR.toIntBits())
+        value = 0
+        foregroundColor = Color.CLEAR.toFloatBits()
+        backgroundColor = Color.CLEAR.toFloatBits()
+        rotation = 0f
+        scale = 1f
+        offsetX = 0f
+        offsetY = 0f
+        isFlippedX = false
+        isFlippedY = false
+        isSubCellEnabled = false
+        subCellGlyph = SubCellGlyph()
     }
 }

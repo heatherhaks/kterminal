@@ -48,7 +48,7 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int = 0,
     var isSubCellEnabled = false
     var subCellGlyph = SubCellGlyph()
 
-    @JvmOverloads fun set(value: Int, foregroundColor: Float, backgroundColor: Float, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
+    @JvmOverloads fun set(value: Int, foregroundColor: Float, backgroundColor: Float, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) : KTerminalGlyph{
         this.value = value
         this.foregroundColor = foregroundColor
         this.backgroundColor = backgroundColor
@@ -58,15 +58,17 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int = 0,
         this.offsetY = offsetY
         this.isFlippedX = isFlippedX
         this.isFlippedY = isFlippedY
+        
+        return this
     }
 
-    @JvmOverloads fun set(char: Char, foregroundColor: Float, backgroundColor: Float, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) {
-        set(char.toInt(), foregroundColor, backgroundColor, rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY)
+    @JvmOverloads fun set(char: Char, foregroundColor: Float, backgroundColor: Float, rotation: Float = 0f, scale: Float = 1f, offsetX: Float = 0f, offsetY: Float = 0f, isFlippedX: Boolean = false, isFlippedY: Boolean = false) : KTerminalGlyph {
+        return set(char.toInt(), foregroundColor, backgroundColor, rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY)
     }
 
 
-    fun set(glyph: KTerminalGlyph) {
-        set(glyph.value, glyph.foregroundColor, glyph.backgroundColor, glyph.rotation, glyph.scale, glyph.offsetX, glyph.offsetY, glyph.isFlippedX, glyph.isFlippedY)
+    fun set(glyph: KTerminalGlyph) : KTerminalGlyph {
+        return set(glyph.value, glyph.foregroundColor, glyph.backgroundColor, glyph.rotation, glyph.scale, glyph.offsetX, glyph.offsetY, glyph.isFlippedX, glyph.isFlippedY)
     }
 
     fun copy() : KTerminalGlyph {
@@ -76,7 +78,7 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int = 0,
         return output
     }
   
-    fun reset() {
+    fun reset() : KTerminalGlyph {
         value = 0
         foregroundColor = Color.CLEAR.toFloatBits()
         backgroundColor = Color.CLEAR.toFloatBits()
@@ -88,5 +90,7 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int = 0,
         isFlippedY = false
         isSubCellEnabled = false
         subCellGlyph = SubCellGlyph()
+        
+        return this
     }
 }

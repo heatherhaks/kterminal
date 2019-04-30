@@ -423,6 +423,10 @@ class KTerminalData(width: Int,
         workingCursor.backgroundColor = defaultBackgroundColor
         workingCursor.rotation = 0f
         workingCursor.scale = 1f
+        workingCursor.isFlippedX = false
+        workingCursor.isFlippedY = false
+        workingCursor.offsetX = 0f
+        workingCursor.offsetY = 0f
 
         val startX = workingCursor.x
         val startY = workingCursor.y

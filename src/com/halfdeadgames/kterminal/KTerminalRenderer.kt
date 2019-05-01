@@ -179,10 +179,11 @@ class KTerminalRenderer(val batch: SpriteBatch,
                     throw IllegalArgumentException("glyph value [${glyph.value}] exceeds found glyph count [${(columns * rows) - 1}]")
                 } else {
                     if(glyph.isSubCellEnabled) {
-                        val topLeft = glyph.subCellGlyph.topLeft
-                        val topRight = glyph.subCellGlyph.topRight
-                        val bottomLeft = glyph.subCellGlyph.bottomLeft
-                        val bottomRight = glyph.subCellGlyph.bottomRight
+
+                        val topLeft = glyph.subCellGlyph.subCells[0][0]
+                        val topRight = glyph.subCellGlyph.subCells[1][0]
+                        val bottomLeft = glyph.subCellGlyph.subCells[0][1]
+                        val bottomRight = glyph.subCellGlyph.subCells[1][1]
 
                         draw(glyphs[topLeft.value], topLeft.color, glyph, i, j, scaleX, scaleY)
                         draw(glyphs[topRight.value], topRight.color, glyph, i, j, scaleX, scaleY)

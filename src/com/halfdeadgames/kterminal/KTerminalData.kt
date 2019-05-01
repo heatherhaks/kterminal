@@ -6,6 +6,7 @@ import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotEllipse
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotLine
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotRect
 import com.halfdeadgames.kterminal.KTerminalShapePlotter.plotTriangle
+import java.security.cert.CertificateNotYetValidException
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class KTerminalData(width: Int,
@@ -373,6 +374,42 @@ class KTerminalData(width: Int,
         }
     }
 
+    @JvmOverloads fun writeSubCell(subcellX: Int, subcellY: Int, color: Float = defaultBackgroundColor, value: Int = -1) {
+        fun clampCoord(value: Int, max: Int) : Int {
+            var tempValue = value
+
+            while (tempValue < 0 || tempValue >= max) {
+                if (tempValue < 0) {
+                    tempValue += max
+                } else if (tempValue >= max) {
+                    tempValue -= max
+                }
+
+            }
+
+            return tempValue
+        }
+
+        val tempX = clampCoord(subcellX, width * 2)
+        val tempY = clampCoord(subcellY, height * 2)
+
+        terminal[tempX / 2][tempY / 2].apply {
+            this.isSubCellEnabled = true
+
+            val tempValue = when(value) {
+                -1 -> when {
+                    tempX % 2 == 0 && tempY % 2 == 0 -> 257
+                    tempX % 2 == 1 && tempY % 2 == 0 -> 258
+                    tempX % 2 == 0 && tempY % 2 == 1 -> 260
+                    else -> 259
+                }
+                else -> value
+            }
+
+            this.subCellGlyph.subCells[tempX % 2][tempY % 2].set(color, tempValue)
+        }
+    }
+
     @JvmOverloads fun setSubCell(topLeftColor: Float = defaultBackgroundColor,
                                  topRightColor: Float = defaultBackgroundColor,
                                  bottomLeftColor: Float = defaultBackgroundColor,
@@ -383,10 +420,11 @@ class KTerminalData(width: Int,
                                  bottomRightValue: Int = 259) {
         terminal[workingCursor.x][workingCursor.y].apply {
             this.isSubCellEnabled = true
-            this.subCellGlyph.topLeft.set(topLeftColor, topLeftValue)
-            this.subCellGlyph.topRight.set(topRightColor, topRightValue)
-            this.subCellGlyph.bottomLeft.set(bottomLeftColor, bottomLeftValue)
-            this.subCellGlyph.bottomRight.set(bottomRightColor, bottomRightValue)
+
+            this.subCellGlyph.subCells[0][0].set(topLeftColor, topLeftValue)
+            this.subCellGlyph.subCells[1][0].set(topRightColor, topRightValue)
+            this.subCellGlyph.subCells[0][1].set(bottomLeftColor, bottomLeftValue)
+            this.subCellGlyph.subCells[1][1].set(bottomRightColor, bottomRightValue)
         }
     }
 
@@ -651,12 +689,12 @@ class KTerminalData(width: Int,
                                     fillForeground: Float = cursor.foregroundColor,
                                     fillBackground: Float = cursor.backgroundColor) {
         drawBox(width, height,
-                KTerminalData.BOX_DOUBLE_DOWN_RIGHT,
-                KTerminalData.BOX_DOUBLE_DOWN_LEFT,
-                KTerminalData.BOX_DOUBLE_UP_RIGHT,
-                KTerminalData.BOX_DOUBLE_UP_LEFT,
-                KTerminalData.BOX_DOUBLE_HORIZONTAL,
-                KTerminalData.BOX_DOUBLE_VERTICAL,
+                BOX_DOUBLE_DOWN_RIGHT,
+                BOX_DOUBLE_DOWN_LEFT,
+                BOX_DOUBLE_UP_RIGHT,
+                BOX_DOUBLE_UP_LEFT,
+                BOX_DOUBLE_HORIZONTAL,
+                BOX_DOUBLE_VERTICAL,
                 isFilled, fillValue, fillForeground, fillBackground)
     }
 
@@ -676,12 +714,12 @@ class KTerminalData(width: Int,
                                     fillForeground: Float = cursor.foregroundColor,
                                     fillBackground: Float = cursor.backgroundColor) {
         drawBox(width, height,
-                KTerminalData.BOX_SINGLE_DOWN_RIGHT,
-                KTerminalData.BOX_SINGLE_DOWN_LEFT,
-                KTerminalData.BOX_SINGLE_UP_RIGHT,
-                KTerminalData.BOX_SINGLE_UP_LEFT,
-                KTerminalData.BOX_SINGLE_HORIZONTAL,
-                KTerminalData.BOX_SINGLE_VERTICAL,
+                BOX_SINGLE_DOWN_RIGHT,
+                BOX_SINGLE_DOWN_LEFT,
+                BOX_SINGLE_UP_RIGHT,
+                BOX_SINGLE_UP_LEFT,
+                BOX_SINGLE_HORIZONTAL,
+                BOX_SINGLE_VERTICAL,
                 isFilled, fillValue, fillForeground, fillBackground)
     }
 

@@ -32,10 +32,11 @@ data class KTerminalGlyph @JvmOverloads constructor(var value: Int = 0,
                 offsetY: Float = 0f,
                 isFlippedX: Boolean = false,
                 isFlippedY: Boolean = false) : this(0, Color.CLEAR.toFloatBits(), Color.CLEAR.toFloatBits(), rotation, scale, offsetX, offsetY, isFlippedX, isFlippedY) {
-        subCellGlyph.topLeft.color = topLeftColor
-        subCellGlyph.topRight.color = topRightColor
-        subCellGlyph.bottomLeft.color = bottomLeftColor
-        subCellGlyph.bottomRight.color = bottomRightColor
+        subCellGlyph.subCells[0][0].color = topLeftColor
+        subCellGlyph.subCells[1][0].color = topRightColor
+        subCellGlyph.subCells[0][1].color = bottomLeftColor
+        subCellGlyph.subCells[1][1].color = bottomRightColor
+
         isSubCellEnabled = true
     }
 

@@ -6,10 +6,10 @@ import com.badlogic.gdx.graphics.Color
 class SubCellGlyph() {
 
     constructor(topLeft: SubCellData, topRight: SubCellData, bottomLeft: SubCellData, bottomRight: SubCellData): this() {
-        this.topLeft = topLeft
-        this.topRight = topRight
-        this.bottomLeft = bottomLeft
-        this.bottomRight = bottomRight
+        subCells[0][0] = topLeft
+        subCells[1][0] = topRight
+        subCells[0][1] = bottomLeft
+        subCells[1][1] = bottomRight
     }
 
     var resetColor = Color.CLEAR.toFloatBits()
@@ -18,10 +18,7 @@ class SubCellGlyph() {
     var defaultBottomLeftValue = 260
     var defaultBottomRightValue = 259
 
-    var topLeft: SubCellData = SubCellData(resetColor, defaultTopLeftValue)
-    var topRight: SubCellData = SubCellData(resetColor, defaultTopRightValue)
-    var bottomLeft: SubCellData = SubCellData(resetColor, defaultBottomLeftValue)
-    var bottomRight: SubCellData = SubCellData(resetColor, defaultBottomRightValue)
+    val subCells = Array(2) { Array(2) {SubCellData(resetColor, defaultTopLeftValue) }}
 
     inner class SubCellData(var color: Float = Color.CLEAR.toFloatBits(), var value: Int = 0) {
         fun set(color: Float, value: Int) {
@@ -35,14 +32,14 @@ class SubCellGlyph() {
     }
 
     fun reset() {
-        topLeft.set(resetColor, defaultTopLeftValue)
-        topRight.set(resetColor, defaultTopRightValue)
-        bottomLeft.set(resetColor, defaultBottomLeftValue)
-        bottomRight.set(resetColor, defaultBottomRightValue)
+        subCells[0][0].set(resetColor, defaultTopLeftValue)
+        subCells[1][0].set(resetColor, defaultTopRightValue)
+        subCells[0][1].set(resetColor, defaultBottomLeftValue)
+        subCells[1][1].set(resetColor, defaultBottomRightValue)
     }
 
     fun copy() : SubCellGlyph {
-        val output = SubCellGlyph(topLeft.copy(), topRight.copy(), bottomLeft.copy(), bottomRight.copy())
+        val output = SubCellGlyph(subCells[0][0].copy(), subCells[0][1].copy(), subCells[1][0].copy(), subCells[1][1].copy())
 
         output.resetColor = resetColor
         output.defaultTopLeftValue = defaultTopLeftValue

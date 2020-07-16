@@ -214,7 +214,7 @@ class KTerminalData(width: Int,
     }
 
     //override any cursor data given by the glyph
-    fun write(glyph: KTerminalGlyph) {
+    fun write(glyph: KTerminalGlyph) : KTerminalData {
         workingCursor.foregroundColor = glyph.foregroundColor
         workingCursor.backgroundColor = glyph.backgroundColor
         workingCursor.rotation = glyph.rotation
@@ -224,10 +224,10 @@ class KTerminalData(width: Int,
         workingCursor.isFlippedX = glyph.isFlippedX
         workingCursor.isFlippedY = glyph.isFlippedY
 
-        write(glyph.value)
+        return write(glyph.value)
     }
 
-    fun write(value: Int) {
+    fun write(value: Int) : KTerminalData {
         terminal[workingCursor.x][workingCursor.y].apply {
             this.value = value
             this.foregroundColor = workingCursor.foregroundColor
@@ -241,10 +241,12 @@ class KTerminalData(width: Int,
         }
 
         workingCursor.set(cursor)
+
+        return this
     }
 
-    fun write(char: Char) {
-        write(char.toInt())
+    fun write(char: Char) : KTerminalData {
+        return write(char.toInt())
     }
 
     @Suppress("LocalVariableName")
@@ -298,7 +300,7 @@ class KTerminalData(width: Int,
             else recursiveTagExtractor(input, tagMap, position + 1, tagging, outputString, tagPos, offsetPos)
     }
 
-    @JvmOverloads fun write(string: String, hasMarkup: Boolean = false, direction: Int = WRITE_LEFT_TO_RIGHT, wrapping: Int = WRAP_NONE) {
+    @JvmOverloads fun write(string: String, hasMarkup: Boolean = false, direction: Int = WRITE_LEFT_TO_RIGHT, wrapping: Int = WRAP_NONE) : KTerminalData {
         var posX = cursor.x
         var posY = cursor.y
         var isWriting = true
@@ -372,9 +374,11 @@ class KTerminalData(width: Int,
                 }
             }
         }
+
+        return this
     }
 
-    @JvmOverloads fun writeSubCell(subcellX: Int, subcellY: Int, color: Float = defaultBackgroundColor, value: Int = -1) {
+    @JvmOverloads fun writeSubCell(subcellX: Int, subcellY: Int, color: Float = defaultBackgroundColor, value: Int = -1) : KTerminalData {
         fun clampCoord(value: Int, max: Int) : Int {
             var tempValue = value
 
@@ -408,6 +412,8 @@ class KTerminalData(width: Int,
 
             this.subCellGlyph.subCells[tempX % 2][tempY % 2].set(color, tempValue)
         }
+
+        return this
     }
 
     @JvmOverloads fun setSubCell(topLeftColor: Float = defaultBackgroundColor,
@@ -417,7 +423,7 @@ class KTerminalData(width: Int,
                                  topLeftValue: Int = 257,
                                  topRightValue: Int = 258,
                                  bottomLeftValue: Int = 260,
-                                 bottomRightValue: Int = 259) {
+                                 bottomRightValue: Int = 259) : KTerminalData {
         terminal[workingCursor.x][workingCursor.y].apply {
             this.isSubCellEnabled = true
 
@@ -426,6 +432,8 @@ class KTerminalData(width: Int,
             this.subCellGlyph.subCells[0][1].set(bottomLeftColor, bottomLeftValue)
             this.subCellGlyph.subCells[1][1].set(bottomRightColor, bottomRightValue)
         }
+
+        return this
     }
 
     fun setSubCell(topLeftColor: Color,
@@ -435,8 +443,8 @@ class KTerminalData(width: Int,
                    topLeftValue: Int = 257,
                    topRightValue: Int = 258,
                    bottomLeftValue: Int = 260,
-                   bottomRightValue: Int = 259) {
-        setSubCell(topLeftColor.toFloatBits(),
+                   bottomRightValue: Int = 259) : KTerminalData {
+        return setSubCell(topLeftColor.toFloatBits(),
                 topRightColor.toFloatBits(),
                 bottomLeftColor.toFloatBits(),
                 bottomRightColor.toFloatBits(),
@@ -446,17 +454,21 @@ class KTerminalData(width: Int,
                 bottomRightValue)
     }
 
-    fun setSubCell(subCellGlyph: SubCellGlyph) {
+    fun setSubCell(subCellGlyph: SubCellGlyph) : KTerminalData {
         terminal[workingCursor.x][workingCursor.y].isSubCellEnabled = true
         terminal[workingCursor.x][workingCursor.y].subCellGlyph = subCellGlyph
+
+        return this
     }
 
-    fun clearSubCell() {
+    fun clearSubCell() : KTerminalData {
         terminal[workingCursor.x][workingCursor.y].isSubCellEnabled = false
         terminal[workingCursor.x][workingCursor.y].subCellGlyph.reset()
+
+        return this
     }
 
-    @JvmOverloads fun clear(width: Int = 1, height: Int = 1) {
+    @JvmOverloads fun clear(width: Int = 1, height: Int = 1) : KTerminalData {
         workingCursor.foregroundColor = defaultForegroundColor
         workingCursor.backgroundColor = defaultBackgroundColor
         workingCursor.rotation = 0f
@@ -478,14 +490,15 @@ class KTerminalData(width: Int,
                 clearSubCell()
             }
         }
+        return this
     }
 
-    fun clearAll() {
+    fun clearAll() : KTerminalData {
         workingCursor.set(0, 0, defaultForegroundColor, defaultBackgroundColor, 0f, 1f, 0f, 0f, isFlippedX = false, isFlippedY = false)
-        clear(width, height)
+        return clear(width, height)
     }
 
-    private fun fillShape(shapeList: List<Pair<Int, Int>>, value: Int, foregroundColor: Float, backgroundColor: Float) {
+    private fun fillShape(shapeList: List<Pair<Int, Int>>, value: Int, foregroundColor: Float, backgroundColor: Float) : KTerminalData {
         val shapeListSorted = shapeList.sortedWith(compareBy<Pair<Int, Int>>{it.second}.thenBy { it.first })
 
         val firstY = shapeListSorted.first().second
@@ -507,14 +520,18 @@ class KTerminalData(width: Int,
                 }
             }
         }
+
+        return this
     }
 
-    private fun drawShape(shapeList: List<Pair<Int, Int>>, value: Int) {
+    private fun drawShape(shapeList: List<Pair<Int, Int>>, value: Int) : KTerminalData {
         shapeList.forEach {
             workingCursor.x = it.first
             workingCursor.y = it.second
             write(value)
         }
+
+        return this
     }
 
     fun drawRect(width: Int,
@@ -523,8 +540,8 @@ class KTerminalData(width: Int,
                  isFilled: Boolean = false,
                  fillChar: Char = char,
                  fillForeground: Float,
-                 fillBackground: Float) {
-        drawRect(width, height, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
+                 fillBackground: Float) :KTerminalData {
+        return drawRect(width, height, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
     @JvmOverloads fun drawRect(width: Int,
@@ -533,19 +550,21 @@ class KTerminalData(width: Int,
                                isFilled: Boolean = false,
                                fillValue: Int = value,
                                fillForeground: Float = cursor.foregroundColor,
-                               fillBackground: Float = cursor.backgroundColor) {
+                               fillBackground: Float = cursor.backgroundColor) : KTerminalData {
         val plotList = plotRect(cursor.x, cursor.y, width, height)
 
         drawShape(plotList, value)
         if(isFilled) fillShape(plotList, fillValue, fillForeground, fillBackground)
+
+        return this
     }
 
-    fun drawLine(endX: Int, endY: Int, char: Char) {
-        drawLine(endX, endY, char.toInt())
+    fun drawLine(endX: Int, endY: Int, char: Char) : KTerminalData {
+        return drawLine(endX, endY, char.toInt())
     }
-    fun drawLine(endX: Int, endY: Int, value: Int) {
+    fun drawLine(endX: Int, endY: Int, value: Int) : KTerminalData {
         val linePlot = plotLine(cursor.x, cursor.y, endX, endY).toList()
-        drawShape(linePlot, value)
+        return drawShape(linePlot, value)
     }
 
     @JvmOverloads fun drawEllipse(width: Int,
@@ -554,8 +573,8 @@ class KTerminalData(width: Int,
                                   isFilled: Boolean = false,
                                   fillChar: Char = ' ',
                                   fillForeground: Float = cursor.foregroundColor,
-                                  fillBackground: Float = cursor.backgroundColor) {
-        drawEllipse(width, height, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
+                                  fillBackground: Float = cursor.backgroundColor) : KTerminalData {
+        return drawEllipse(width, height, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
     @JvmOverloads fun drawEllipse(width: Int,
@@ -564,11 +583,13 @@ class KTerminalData(width: Int,
                                   isFilled: Boolean = false,
                                   fillValue: Int = value,
                                   fillForeground: Float = cursor.foregroundColor,
-                                  fillBackground: Float = cursor.backgroundColor) {
+                                  fillBackground: Float = cursor.backgroundColor)  : KTerminalData {
         val ellipsePlot = plotEllipse(cursor.x, cursor.y, cursor.x + width, cursor.y + height)
 
         drawShape(ellipsePlot, value)
         if(isFilled) fillShape(ellipsePlot, fillValue, fillForeground, fillBackground)
+
+        return this
     }
 
     @JvmOverloads fun drawCircle(radius: Int,
@@ -576,8 +597,8 @@ class KTerminalData(width: Int,
                                  isFilled: Boolean = false,
                                  fillChar: Char = char,
                                  fillForeground: Float = cursor.foregroundColor,
-                                 fillBackground: Float = cursor.backgroundColor) {
-        drawCircle(radius, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
+                                 fillBackground: Float = cursor.backgroundColor) : KTerminalData {
+        return drawCircle(radius, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
     @JvmOverloads fun drawCircle(radius: Int,
@@ -585,11 +606,13 @@ class KTerminalData(width: Int,
                                  isFilled: Boolean = false,
                                  fillValue: Int = value,
                                  fillForeground: Float = cursor.foregroundColor,
-                                 fillBackground: Float = cursor.backgroundColor) {
+                                 fillBackground: Float = cursor.backgroundColor) : KTerminalData {
         val circlePlot = plotCircle(cursor.x, cursor.y, radius)
 
         drawShape(circlePlot, value)
         if(isFilled) fillShape(circlePlot, fillValue, fillForeground, fillBackground)
+
+        return this
     }
     
     @JvmOverloads fun drawTriangle(leftX: Int,
@@ -600,8 +623,8 @@ class KTerminalData(width: Int,
                                    isFilled: Boolean = false,
                                    fillChar: Char = char,
                                    fillForeground: Float = cursor.foregroundColor,
-                                   fillBackground: Float = cursor.backgroundColor) {
-        drawTriangle(leftX, leftY, rightX, rightY, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
+                                   fillBackground: Float = cursor.backgroundColor) : KTerminalData {
+        return drawTriangle(leftX, leftY, rightX, rightY, char.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
     @JvmOverloads fun drawTriangle(leftX: Int,
@@ -612,11 +635,13 @@ class KTerminalData(width: Int,
                                    isFilled: Boolean = false,
                                    fillValue: Int = value,
                                    fillForeground: Float = cursor.foregroundColor,
-                                   fillBackground: Float = cursor.backgroundColor) {
+                                   fillBackground: Float = cursor.backgroundColor) : KTerminalData {
         val trianglePlot = plotTriangle(cursor.x, cursor.y, leftX, leftY, rightX, rightY)
 
         drawShape(trianglePlot, value)
         if(isFilled) fillShape(trianglePlot, fillValue, fillForeground, fillBackground)
+
+        return this
     }
 
     @JvmOverloads fun drawBox(width: Int,
@@ -630,8 +655,8 @@ class KTerminalData(width: Int,
                               isFilled: Boolean = false,
                               fillChar: Char = ' ',
                               fillForeground: Float = cursor.foregroundColor,
-                              fillBackground: Float = cursor.backgroundColor) {
-        drawBox(width, height, topLeft.toInt(), topRight.toInt(), bottomLeft.toInt(), bottomRight.toInt(),
+                              fillBackground: Float = cursor.backgroundColor) : KTerminalData {
+        return drawBox(width, height, topLeft.toInt(), topRight.toInt(), bottomLeft.toInt(), bottomRight.toInt(),
                 horizontal.toInt(), vertical.toInt(), isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
@@ -646,7 +671,7 @@ class KTerminalData(width: Int,
                               isFilled: Boolean = false,
                               fillValue: Int = 0,
                               fillForeground: Float = cursor.foregroundColor,
-                              fillBackground: Float = cursor.backgroundColor) {
+                              fillBackground: Float = cursor.backgroundColor) : KTerminalData {
         val plotList = plotRect(cursor.x, cursor.y, width, height)
 
         plotList.forEach {
@@ -671,6 +696,8 @@ class KTerminalData(width: Int,
         }
 
         if(isFilled) fillShape(plotList, fillValue, fillForeground, fillBackground)
+
+        return this
     }
 
     @JvmOverloads fun drawDoubleBox(width: Int,
@@ -678,8 +705,8 @@ class KTerminalData(width: Int,
                                     isFilled: Boolean,
                                     fillChar: Char,
                                     fillForeground: Float = cursor.foregroundColor,
-                                    fillBackground: Float = cursor.backgroundColor) {
-        drawDoubleBox(width, height, isFilled, fillChar.toInt(), fillForeground, fillBackground)
+                                    fillBackground: Float = cursor.backgroundColor) : KTerminalData {
+        return drawDoubleBox(width, height, isFilled, fillChar.toInt(), fillForeground, fillBackground)
     }
 
     @JvmOverloads fun drawDoubleBox(width: Int,
@@ -687,8 +714,8 @@ class KTerminalData(width: Int,
                                     isFilled: Boolean = false,
                                     fillValue: Int = 0,
                                     fillForeground: Float = cursor.foregroundColor,
-                                    fillBackground: Float = cursor.backgroundColor) {
-        drawBox(width, height,
+                                    fillBackground: Float = cursor.backgroundColor) : KTerminalData {
+        return drawBox(width, height,
                 BOX_DOUBLE_DOWN_RIGHT,
                 BOX_DOUBLE_DOWN_LEFT,
                 BOX_DOUBLE_UP_RIGHT,
@@ -703,8 +730,8 @@ class KTerminalData(width: Int,
                       isFilled: Boolean,
                       fillChar: Char,
                       fillForeground: Color,
-                      fillBackground: Color) {
-        drawSingleBox(width, height, isFilled, fillChar, fillForeground, fillBackground)
+                      fillBackground: Color) : KTerminalData {
+        return drawSingleBox(width, height, isFilled, fillChar, fillForeground, fillBackground)
     }
 
     @JvmOverloads fun drawSingleBox(width: Int,
@@ -712,8 +739,8 @@ class KTerminalData(width: Int,
                                     isFilled: Boolean = false,
                                     fillValue: Int = 0,
                                     fillForeground: Float = cursor.foregroundColor,
-                                    fillBackground: Float = cursor.backgroundColor) {
-        drawBox(width, height,
+                                    fillBackground: Float = cursor.backgroundColor) : KTerminalData {
+        return drawBox(width, height,
                 BOX_SINGLE_DOWN_RIGHT,
                 BOX_SINGLE_DOWN_LEFT,
                 BOX_SINGLE_UP_RIGHT,
